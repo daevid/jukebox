@@ -53,6 +53,7 @@ E.g. when you initially play back a sound sprite entry, you will get a delay up 
 So you will have to insert gaps between the sound sprite entries.
 
 Sound Sprite structure:
+
 * 1 second silence
 * First Entry
 * 1 second silence
@@ -115,6 +116,13 @@ var myStreams = new z.JukeBox([{
 	// e.g. jukeBox.features and jukeBox.codecs
 
 });
+
+// Example call of the Stream API
+myStreams[0].play('background-birds');
+
+window.setTimeout(function() {
+	myStreams[0].play('cricket-chirp'); // will delegate the work to myStreams[1], because myStreams[0] is busy
+}, 1000);
 ```
 
 
@@ -127,7 +135,7 @@ Public (per-Stream) API
 -----------------------
 
 
-* `play(to?)`
+* `play(to)`
 	* to: (float) time in seconds
 	* to: (string) spritemap-entry
 
@@ -147,7 +155,6 @@ stream.spritemap = {
 stream.play("background-music"); // fastest
 stream.play(20.10); // slower
 stream.play("1:23:45"); // also valid, but not recommended
-
 ```
 
 
@@ -169,7 +176,7 @@ This function will resume the playback of a stream.
 It will start playback at the last cached position. If no position was cached before, it will start from the current position of the stream.
 
 
-* `setVolume(to?)`
+* `setVolume(to)`
 	* to: (float) volume (min = 0, max = 1.0)
 
 This function will set the volume to the given value.
@@ -180,7 +187,7 @@ This function will set the volume to the given value.
 This function will return the current position of the stream.
 
 
-* `setCurrentTime(to?)`
+* `setCurrentTime(to)`
 	* to: (float) time in seconds
 
 This function will *try* to set the current position of the stream. It may fail if the stream is not ready for that, 
