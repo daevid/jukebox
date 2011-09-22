@@ -1,12 +1,8 @@
-if (!window.z) {
-	window.z = {};
-}
-
 /**
  * @param {Array|Object} settings The settings array (for multiple streams) or the settings object for a single stream
  * @returns {Array|Object} multiple streams will return an array, single stream will return the stream.
  */
-z.JukeBox = function(settings, callback) {
+var Jukebox = function(settings, callback) {
 
 	// settings should be an Array
 	if (!settings.length) {
@@ -62,7 +58,7 @@ z.JukeBox = function(settings, callback) {
 
 
 
-z.JukeBox.prototype = {
+Jukebox.prototype = {
 
 	/*
 	 * This function detects the supported codecs and features. There are a bunch of different codec formats that can be played or detected.
@@ -202,8 +198,8 @@ z.JukeBox.prototype = {
 						if (this.streams.length < this.features.channels) {
 
 							var origin = this.streams[s],
-								channel = new z.JukeBox.Stream(origin.resource + '', {
-									id: 'z-jukebox-streams-' + this.streams.length,
+								channel = new Jukebox.Stream(origin.resource + '', {
+									id: 'jukebox-streams-' + this.streams.length,
 									spritemap: origin.spritemap
 
 								}, this.features);
@@ -345,10 +341,10 @@ z.JukeBox.prototype = {
 			if (resource && (this.features.html5audio || this.features.flashaudio)) {
 
 				// id required currently only for external plugin apis (which is my awesome Flash file =D)
-				setting.id = 'z-jukebox-streams-' + s;
+				setting.id = 'jukebox-streams-' + s;
 
 				// link features to let stream know if a _background has to be set
-				stream = new z.JukeBox.Stream(resource, setting, this.features);
+				stream = new Jukebox.Stream(resource, setting, this.features);
 
 				// required due to bug with absolute urls and linking.
 				stream.resource = resource;

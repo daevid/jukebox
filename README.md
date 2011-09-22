@@ -1,9 +1,8 @@
 
-Zynga's JukeBox
+Zynga's Jukebox
 ==============
 
-The JukeBox is a component for playing sounds, music with the usage of sprites. It is known to run on Android 1.6+ devices and needs very few resources compared to other solutions on the web.
-Its concept is called automatic stream correction. This concept follows the way that unavailable streams will be corrected when to their current time position when they are ready for playback.
+The Jukebox is a component for playing sounds and music with the usage of sprites with a special focus on performance and cross-device deployment. It is known to run even on Android 1.6+ devices and needs very few resources compared to other solutions on the web.
 
 
 Features
@@ -11,79 +10,61 @@ Features
 
 * HTML5 audio
 * Flash playback as fallback (support for Android 1.6)
-* Targeted for low-end devices and mobile platforms
+* Targeted at low-end devices and mobile platforms
 * Playback of Sound Sprite entries
 * Codec detection
 * Feature detection
 * Multi-Stream ("channels") support
 * Automatic work delegation of busy audio streams
+* Automatic stream correction
 * Support for platforms where only one stream can be played in parallel (IE9 / iOS)
 
 
 Options
 -------
 
-JukeBox has several options that are configure per-stream, that means the JukeBox constructor itself requires an array of stream settings.
+Jukebox has several options that are configured per-stream, meaning the Jukebox constructor itself requires an array of stream settings. A stream setting has the following properties:
 
+* resources = *array of urls to sound sprites*
+* autoplay = 'spritemap-entry'
+* spritemap = 'object'
 
-A stream setting has the following properties:
+The stream.spritemap.entry looks like this: ("entry" is the name of the spritemap entry which is used for autoplay or stream playback)
 
-* resources = `array of urls to sound sprites`
-* autoplay = `spritemap-entry`
-* spritemap = `object`
-
-The stream.spritemap.entry looks like this:
-(Note that "entry" is the name of the spritemap entry which is used for autoplay or stream playback)
-
-* spritemap.entry.start = `time`
-* spritemap.entry.end = `time`
-* spritemap.entry.loop = `false` or `true`
+* spritemap.entry.start = *time*
+* spritemap.entry.end = *time*
+* spritemap.entry.loop = *Boolean*
 
 
 Setting Up a Sound Sprite
 -------------------------
 
-First, you will have to know that there are several issues with the Audio API on vendor implementations.
-The Audio API will play asynchronously in the background, so you can't rely in "canplaythrough" event on mobile devices.
-
-E.g. when you initially play back a sound sprite entry, you will get a delay up to 820ms (on iPhone 4 / iOS4).
-
-So you will have to insert gaps between the sound sprite entries.
-(I'm talking about the audio files themselves)
+As there are several issues with playing individual files through the HTML5 audio API, we try to prevent some of them by using sound sprites. Since the timer resolution of today's browsers, especially mobile ones, isn't great, it's important to leave a silence gap between every actual sound in the sprite.
 
 Example for a sound sprite structure:
 
 * 1 second silence
-* First Entry
+* First sound
 * 1 second silence
-* Second Entry
+* Second sound
 * 1 second silence
-* Third Entry
-* ... and so on ...
-
-
-A personal hint from me is to use the first sprite entry as the background music. So you will have the smallest delay
-and it's not that important to play back a background music right after the user has clicked something.
-
+* Third sound
 
 Known Issues
 ------------
 
-There's the problem with the asynchronous playback, which cant be avoided on the JavaScript-side of the implementation.
-Delays were measured up to 820ms on initial playback. iOS has also a problem when falling into sleep mode, because iTunes will play back
-the soundfile afterwards without stopping it.
+There's the problem with asynchronous playback, which can't be avoided on the JavaScript-side of the implementation. Delays were measured up to 820ms on initial playback. iOS has also a problem when falling into sleep mode, as iTunes will play back the sound file afterwards without stopping it.
 
-iOS' security model will only playback sounds when the user has interacted with the browser. So you will have to use a button or similar that will
-call myStreams.play('background-birds') or similar (see > Usage for more details).
+Additionally, iOS' security model prevents a website from playing sounds without prior user interaction. Thus, you will have to use a button or similar that will call myStreams.play('background-birds') or similar (see > Usage for more details).
 
 
 Usage
 -----
 
-First, you will have to initialize the JukeBox. The JukeBox itself will return the Stream instances within an array.
+First, you will have to initialize the Jukebox. The Jukebox itself will return the Stream instances within an array.
 
 ```js
-var myStreams = new z.JukeBox([{
+var myStreams = new Jukebox([{
 
 	"resources": [
 		"./url/to/spritemap.mp3",
@@ -109,10 +90,10 @@ var myStreams = new z.JukeBox([{
 	
 	}
 
-}], function(jukeBox) {
+}], function(jukebox) {
 
-	// This is how you can access the transparent jukeBox
-	// e.g. jukeBox.features and jukeBox.codecs
+	// This is how you can access the transparent jukebox
+	// e.g. jukebox.features and jukebox.codecs
 
 });
 
@@ -125,7 +106,7 @@ window.setTimeout(function() {
 ```
 
 
-After you've initialized the streams, you can use the Public API on per-stream level.
+After you've initialized the streams, you can use the public API on a per-stream level.
 Don't worry about busy streams, they will automatically delegate the work to the next free stream.
 If only one parallel stream is supported, the entry will be played instantly.
 
@@ -142,7 +123,6 @@ myStreams[0].play("background-music"); // fastest
 myStreams[0].play(20.10); // slower
 myStreams[0].play("1:23:45"); // also valid, but not recommended
 ```
- 
 
 * `play(to)`
 	* to: (float) time in seconds

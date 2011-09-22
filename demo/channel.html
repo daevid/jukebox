@@ -4,9 +4,9 @@
 	<title>JukeBox Demo - Multiple Channels</title>
     <meta charset="utf-8" />
 
-	<script src="./js/JukeBox.js"></script>
-	<script src="./js/JukeBox.Stream.js"></script>
-	<script src="./js/JukeBox.FlashStream.js"></script>
+	<script src="../src/Jukebox.js"></script>
+	<script src="../src/Jukebox.Stream.js"></script>
+	<script src="../src/Jukebox.FlashStream.js"></script>
 
 	<style>
 	#debug, #features, #codecs{
@@ -23,7 +23,7 @@
 </head>
 <body>
 
-<h3>JukeBox Demo - Multiple Channels</h3>
+<h3>Jukebox Demo - Multiple Channels</h3>
 <div>
 
 	<strong>Play</strong>:
@@ -64,16 +64,16 @@
 <hr>
 <div id="debug"></div>
 
-<script src="./demo/helper.js"></script>
+<script src="helper.js"></script>
 <script>
-var myStreams = new z.JukeBox([{
+var myStreams = new Jukebox([{
 
 	"resources": [
 //		"./demo/media/spritemap-forest.m4a", // buggy implementation on IE9, so preferred one is mp3
 //		"./demo/media/spritemap-forest.amr", // every phone supports 3gp / amr codec due to GSM voice encoding - just awesome fallback method!
-		"./demo/media/spritemap-forest.ac3",
-		"./demo/media/spritemap-forest.mp3",
-		"./demo/media/spritemap-forest.ogg"
+		"media/spritemap-forest.ac3",
+		"media/spritemap-forest.mp3",
+		"media/spritemap-forest.ogg"
 	],
 
 	"autoplay": "bg-birds",
@@ -109,21 +109,21 @@ var myStreams = new z.JukeBox([{
 
 	}
 
-}], function(jukeBox) {
+}], function(jukebox) {
 
-	// The JukeBox itself is transparent, this is how you can
+	// The Jukebox itself is transparent, this is how you can
 	// access its properties
 
 	var features = [],
 		codecs = [];
 
 	var f;
-	for (f in jukeBox.features) {
-		features.push(f + ' = ' + jukeBox.features[f]);
+	for (f in jukebox.features) {
+		features.push(f + ' = ' + jukebox.features[f]);
 	}
 
-	for (f in jukeBox.codecs) {
-		codecs.push(f + ' = ' + jukeBox.codecs[f]);
+	for (f in jukebox.codecs) {
+		codecs.push(f + ' = ' + jukebox.codecs[f]);
 	}
 
 	document.getElementById('features').innerHTML = features.join('<br>');

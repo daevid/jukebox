@@ -2,7 +2,7 @@
  * @constructor This will create a stream instance for a given settings object.
  * @returns {Object} The created stream instance that contains the context, a spritemap and attached playback methods.
  */
-z.JukeBox.Stream = function(resource, settings, features) {
+Jukebox.Stream = function(resource, settings, features) {
 
 	// set an id to trace channel origins
 	this.id = settings.id;
@@ -13,9 +13,9 @@ z.JukeBox.Stream = function(resource, settings, features) {
 		this.context = new Audio();
 
 	// flash sound api
-	} else if (features.flashaudio && z.JukeBox.FlashStream) {
+	} else if (features.flashaudio && Jukebox.FlashStream) {
 
-		return new z.JukeBox.FlashStream(resource, settings, features);
+		return new Jukebox.FlashStream(resource, settings, features);
 
 	} else {
 
@@ -56,7 +56,7 @@ z.JukeBox.Stream = function(resource, settings, features) {
 
 
 
-z.JukeBox.Stream.prototype = {
+Jukebox.Stream.prototype = {
 
 	/**
 	 * This function plays a stream. It accepts either a spritemap entry's name or a direct seconds-based position value in the stream.

@@ -2,9 +2,9 @@
  * @constructor This will create a FLASH stream instance with given settings.
  * @returns {Object} The created FLASH stream instance that contains the context, a spritemap and attached playback methods.
  */
-z.JukeBox.FlashStream = function(resource, settings, features) {
+Jukebox.FlashStream = function(resource, settings, features) {
 
-	this.id = settings.id || 'z-jukebox-flashstream-1337';
+	this.id = settings.id || 'jukebox-flashstream-1337';
 
 	var flashVars = [
 		'id=' + this.id,
@@ -76,7 +76,7 @@ z.JukeBox.FlashStream = function(resource, settings, features) {
 
 
 
-z.JukeBox.FlashStream.prototype = {
+Jukebox.FlashStream.prototype = {
 
 	/**
 	 * This function plays a stream. It accepts either a spritemap entry's name or a direct seconds-based position value in the stream.
