@@ -12,11 +12,9 @@ Features
 * HTML5 audio
 * Flash playback as fallback (support for Android 1.6)
 * Targeted for low-end devices and mobile platforms
-
 * Playback of Sound Sprite entries
 * Codec detection
 * Feature detection
-
 * Multi-Stream ("channels") support
 * Automatic work delegation of busy audio streams
 * Support for platforms where only one stream can be played in parallel (IE9 / iOS)
@@ -30,7 +28,7 @@ JukeBox has several options that are configure per-stream, that means the JukeBo
 
 A stream setting has the following properties:
 
-* resources = `array`
+* resources = `array of urls to sound sprites`
 * autoplay = `spritemap-entry`
 * spritemap = `object`
 
@@ -51,8 +49,9 @@ The Audio API will play asynchronously in the background, so you can't rely in "
 E.g. when you initially play back a sound sprite entry, you will get a delay up to 820ms (on iPhone 4 / iOS4).
 
 So you will have to insert gaps between the sound sprite entries.
+(I'm talking about the audio files themselves)
 
-Sound Sprite structure:
+Example for a sound sprite structure:
 
 * 1 second silence
 * First Entry
@@ -134,6 +133,16 @@ If only one parallel stream is supported, the entry will be played instantly.
 Public (per-Stream) API
 -----------------------
 
+Example of a Stream API Call:
+
+```js
+// Note that myStreams was initialized already like in the previous example (see > Usage)
+
+myStreams[0].play("background-music"); // fastest
+myStreams[0].play(20.10); // slower
+myStreams[0].play("1:23:45"); // also valid, but not recommended
+```
+ 
 
 * `play(to)`
 	* to: (float) time in seconds
@@ -143,19 +152,6 @@ This function will start playback of the given spritemap entry.
 You can pass through a value of a time (which is inside a sprite entry), too. It will automatically loop a background music
 if it was configured to loop.
 
-Example (dummy-code):
-
-```js
-stream.spritemap = {
-	"background-music": 1.00,
-	"end": 41.00,
-	"loop": true
-};
-
-stream.play("background-music"); // fastest
-stream.play(20.10); // slower
-stream.play("1:23:45"); // also valid, but not recommended
-```
 
 
 * `stop()`
