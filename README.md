@@ -37,9 +37,9 @@ A stream setting has the following properties:
 The stream.spritemap.entry looks like this:
 (Note that "entry" is the name of the spritemap entry which is used for autoplay or stream playback)
 
-spritemap.entry.start = `time`,
-spritemap.entry.end = `time`,
-spritemap.entry.loop = `false` or `true`
+* spritemap.entry.start = `time`
+* spritemap.entry.end = `time`
+* spritemap.entry.loop = `false` or `true`
 
 
 Setting Up a Sound Sprite
@@ -48,7 +48,7 @@ Setting Up a Sound Sprite
 First, you will have to know that there are several issues with the Audio API on vendor implementations.
 The Audio API will play asynchronously in the background, so you can't rely in "canplaythrough" event on mobile devices.
 
-E.g. when you initially play back a sound sprite entry, you will get a delay up to 820ms (iPhone 4 / iOS4).
+E.g. when you initially play back a sound sprite entry, you will get a delay up to 820ms (on iPhone 4 / iOS4).
 
 So you will have to insert gaps between the sound sprite entries.
 
