@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+	<title>Single JukeBox Demo</title>
+    <meta charset="utf-8" />
+
+	<script src="../src/Jukebox.js"></script>
+
+	<style>
+	#debug, #features, #codecs{
+		width:98%;
+		padding:1%;
+		overflow-y:scroll;
+		color:white;
+		background:grey;
+	}
+	.footnote:target{
+		background:yellow;
+	}
+	</style>
+</head>
+<body>
+
+<h3>Single Jukebox Demo</h3>
+
+
+<h4>JukeBox Controls</h4>
+<div>
+	<button onclick="myJukeBox.stop()">stop()</button>
+	<button onclick="myJukeBox.pause()">pause()</button>
+	<button onclick="myJukeBox.resume()">resume()</button>
+	<button onclick="myJukeBox.setVolume(0.1)">setVolume(0.1)</button>
+	<button onclick="myJukeBox.setVolume(1.0)">setVolume(1.0)</button>
+</div>
+
+<h4>Play Spritemap Entries</h4>
+<div id="play-spritemap-entries"></div>
+
+
+<script>
+var myJukeBox;
+(function() {
+
+	myJukeBox = new JukeBox({
+
+		// optional, required for MSIE-Environments =/
+		// enforceFlash: true,
+		
+		resources: [
+			'media/spritemap-forest.ac3',
+			'media/spritemap-forest.mp3',
+			'media/spritemap-forest.ogg'
+		],
+
+		autoplay: 'cricket_chirp',
+
+		spritemap: {
+
+			"bg-birds": {
+				"start": 1.00,
+				"end": 41.00,
+				"loop": true
+			},
+
+			"cricket_chirp": {
+				"start": 42.00,
+				"end": 44.75
+			},
+
+			"dog_bark": {
+				"start": 46.00,
+				"end": 47.50
+			},
+
+			"bg-chacofrogs": {
+				"start": 51.00,
+				"end": 81.00,
+				"loop": true
+			},
+
+			"chacofrog": {
+				"start": 82.00,
+				"end": 85.90 // crappy audio api says that the stream ends at 84.9760 instead of 85.00 as it does =/
+			}
+
+		}
+
+	});
+
+	var spritemapEntries = document.getElementById('play-spritemap-entries');
+
+	for (var entry in myJukeBox.settings.spritemap) {
+	
+		var button = document.createElement('button'),
+			desc = entry + ((myJukeBox.settings.spritemap[entry].loop === true) ? ' (loop)' : '');
+
+		button.innerHTML = desc;
+
+		(function(entry){
+			button.onclick = function() {
+				myJukeBox.play(entry);
+			};
+		})(entry);
+
+		spritemapEntries.appendChild(button);
+
+	}
+
+
+})();
+</script>
+</body>
+</html>

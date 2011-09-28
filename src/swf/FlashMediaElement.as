@@ -1,114 +1,74 @@
-package {
+package  
+{
+
+	// IMPORTANT: Include this line when you build it from source directly without having a project folder
+	// import AudioElement.as;
+
 	import flash.display.*;
 	import flash.events.*;
+	import flash.external.ExternalInterface;
+	import flash.geom.Rectangle;
 	import flash.media.*;
 	import flash.net.*;
-	import flash.text.*;
-	import flash.system.*;
-
 	import flash.net.NetConnection;
 	import flash.net.NetStream;
-
-	import flash.external.ExternalInterface;
-
-	import AudioElement;
+	import flash.system.*;
+	import flash.text.*;
+	import flash.utils.Timer;
 
 	public class FlashMediaElement extends Sprite {
 
-		private var _mediaUrl:String;
+		private var _params:Object;
+		private var _file:String;
 		private var _autoplay:Boolean;
-		private var _allowedPluginDomain:String;
 
-		// media
-		private var _mediaElement:AudioElement;
+		private var _audioElement:AudioElement;
 
 		public function FlashMediaElement() {
-
+			
 			// allow this player to be called from different HTML URLs
 			Security.allowDomain("*");
 
-			// get parameters
-			var params:Object = LoaderInfo(this.root.loaderInfo).parameters;
-			_mediaUrl = (params['file'] != undefined) ? String(params['file']) : "";
-			_autoplay = (params['autoplay'] != undefined) ? (String(params['autoplay']) == "true") : false;
+			_params = LoaderInfo(this.root.loaderInfo).parameters;
 
-			// create media element
-			_mediaElement = new AudioElement(_autoplay);
+			_file = _params['file'] || '';
+			_autoplay = (_params['autoplay'] !== 'false') ? true : false;
 
-			if (_mediaUrl != "") {
-				_mediaElement.setSrc(_mediaUrl);
+			_audioElement = new AudioElement(_file, _autoplay);
+
+			try {
+
+				ExternalInterface.addCallback('play', function():void {
+					_audioElement.play();
+				});
+
+				ExternalInterface.addCallback('pause', function():void {
+					_audioElement.pause();
+				});
+
+				ExternalInterface.addCallback('stop', function():void {
+					_audioElement.stop();
+				});
+
+				ExternalInterface.addCallback('getCurrentTime', function():Number {
+					return _audioElement.getCurrentTime();
+				});
+
+				ExternalInterface.addCallback('setCurrentTime', function(pointer:Number):Boolean {
+					return _audioElement.setCurrentTime(pointer);
+				});
+
+				ExternalInterface.addCallback('setVolume', function(value:Number):void {
+					_audioElement.setVolume(value);
+				});
+
+			} catch (error:SecurityError) {
+				throw "Security Error: " + error.message + "\n";
+			} catch (error:Error) {
+				throw "Error: " + error.message + "\n";
 			}
-
-			if (ExternalInterface.available) {
-
-				try {
-					if (ExternalInterface.objectID != null && ExternalInterface.objectID.toString() != "") {
-
-						// add HTML media methods
-						ExternalInterface.addCallback("play", playMedia);
-						ExternalInterface.addCallback("load", loadMedia);
-						ExternalInterface.addCallback("pause", pauseMedia);
-						ExternalInterface.addCallback("stop", stopMedia);
-
-						ExternalInterface.addCallback("setSrc", setSrc);
-						ExternalInterface.addCallback("getCurrentTime", getCurrentTime);
-						ExternalInterface.addCallback("setCurrentTime", setCurrentTime);
-						ExternalInterface.addCallback("setVolume", setVolume);
-						// ExternalInterface.addCallback("setMuted", setMuted);
-
-					}
-
-				} catch (error:SecurityError) {
-					throw "A SecurityError occurred: " + error.message + "\n";
-				} catch (error:Error) {
-					throw "An Error occurred: " + error.message + "\n";
-				}
-
-			}
-
-			if (_autoplay) {
-				_mediaElement.load();
-				_mediaElement.play();
-			}
-
-		}
-
-		function playMedia():void {
-			_mediaElement.play();
-		}
-
-		function loadMedia():void {
-			_mediaElement.load();
-		}
-
-		function pauseMedia():void {
-			_mediaElement.pause();
-		}
-
-		function setSrc(url:String):void {
-			_mediaElement.setSrc(url);
-		}
-
-		function stopMedia():void {
-			_mediaElement.stop();
-		}
-
-		function getCurrentTime():Number {
-			return _mediaElement.getCurrentTime();
-		}
-
-		function setCurrentTime(time:Number):void {
-			_mediaElement.setCurrentTime(time);
-		}
-
-		function setVolume(volume:Number):void {
-			_mediaElement.setVolume(volume);
-		}
-
-		// function setMuted(muted:Boolean):void {
-		//	_mediaElement.setMuted(muted);
-		// }
-
-
+			
+		}		
 	}
 }
+

@@ -1,4 +1,6 @@
-package {
+package
+{
+
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
@@ -11,170 +13,110 @@ package {
 	import flash.utils.Timer;
 
 	public class AudioElement {
-
+		
 		private var _sound:Sound;
 		private var _soundTransform:SoundTransform;
 		private var _soundChannel:SoundChannel;
 		private var _soundLoaderContext:SoundLoaderContext;
-
-		private var _volume:Number = 1;
-		private var _preMuteVolume:Number = 0;
-		private var _isMuted:Boolean = false;
-		private var _isPaused:Boolean = true;
-		private var _isEnded:Boolean = false;
-		private var _isLoaded:Boolean = false;
-		private var _currentTime:Number = 0;
-		private var _duration:Number = 0;
-		private var _bufferedTime:Number = 0;
-
-		private var _currentUrl:String = "";
+		
+		private var _file:String = "";
 		private var _autoplay:Boolean = true;
+		private var _currentTime:Number = 0;
+		private var _isPlaying:Boolean = false;
 
-		private var _firedCanPlay:Boolean = false;
 
 
-		public function AudioElement(autoplay:Boolean) {
+		public function AudioElement(file:String, autoplay:Boolean) {
 
+			_file = file;
 			_autoplay = autoplay;
+
+			_sound = new Sound();
+			_sound.load(new URLRequest(_file));
 
 			_soundTransform = new SoundTransform();
 			_soundLoaderContext = new SoundLoaderContext();
 
-		}
-
-
-		public function load():void {
-
-			if (_currentUrl == "")
-				return;
-
-			_sound = new Sound();
-			_sound.load(new URLRequest(_currentUrl));
-			_currentTime = 0;
-
-			_firedCanPlay = false;
-			_isLoaded = true;
-
-			if (!_firedCanPlay) {
-				_firedCanPlay = true;
+			if (autoplay) {
+				this.play();
 			}
 
-			if (_playAfterLoading) {
-				_playAfterLoading = false;
-				play();
-			}
 		}
 
-		public function unload():void {
-			_sound = null;
-			_isLoaded = false;
-		}
-
-
-		// PRIVATE METHODS
+		/*
+		 * PRIVATE API and EVENT HANDLER
+		 */
 		private function soundCompleteHandler(e:Event):void {
 			_currentTime = 0;
-			_isEnded = true;
-		}
-
-		private function didStartPlaying():void {
-			_isPaused = false;
-			if (!_firedCanPlay) {
-				_firedCanPlay = true;
-			}
+			_isPlaying = false;			
 		}
 
 
-		// PUBLIC METHODS
-		public function setSrc(url:String):void {
-			_currentUrl = url;
-			_isLoaded = false;
-		}
 
-		private var _playAfterLoading:Boolean= false;
-
+		/*
+		 * PUBLIC API
+		 */
 		public function play():void {
-
-			// initial playback
-			if (!_isLoaded) {
-				_playAfterLoading = true;
-				load();
-				return;
+			// Only Single Channel Mode.
+			// Otherwise multiple play() calls will cause a difference to HTML5 Audio API
+			// ... and start multiple playbacks that won't be able to be stopped.
+			if (_soundChannel === null) {
+				_soundChannel = _sound.play(_currentTime, 0, _soundTransform);
+				_soundChannel.removeEventListener(Event.SOUND_COMPLETE, soundCompleteHandler);
+				_soundChannel.addEventListener(Event.SOUND_COMPLETE, soundCompleteHandler);	
 			}
-
-			_soundChannel = _sound.play(_currentTime, 0, _soundTransform);
-			_soundChannel.removeEventListener(Event.SOUND_COMPLETE, soundCompleteHandler);
-			_soundChannel.addEventListener(Event.SOUND_COMPLETE, soundCompleteHandler);
-
-			didStartPlaying();
+			_isPlaying = true;
 		}
 
 		public function pause():void {
-			if (_soundChannel != null) {
+			if (_soundChannel !== null) {
 				_currentTime = _soundChannel.position;
 				_soundChannel.stop();
 			}
-
-			_isPaused = true;
+			_isPlaying = false;
 		}
-
-
+		
 		public function stop():void {
-			if (_soundChannel != null) {
+			if (_soundChannel !== null) {
 				_soundChannel.stop();
-				_sound.close();
+				_soundChannel = null;
 			}
-			unload();
+			_isPlaying = false;
 		}
 
 		public function getCurrentTime():Number {
-			if (_soundChannel != null) {
-				_currentTime = _soundChannel.position/1000;
-			} else {
-				// pretty hacky, but ActionScript sucks hard.
-				_currentTime = 0;
+			var retValue:Number = _currentTime;
+			if (_soundChannel !== null) {
+				retValue = _soundChannel.position / 1000;
 			}
-			return _currentTime;
+			return retValue;
+		}
+		
+		public function setCurrentTime(pointer:Number):Boolean {
+			if (_sound !== null) {
+				
+				_currentTime = Math.min(_sound.length, pointer * 1000);
+				
+				if (_isPlaying) {
+					this.stop();
+					this.play();
+				}
+			
+			}
+
+			return true;
 		}
 
-		public function setCurrentTime(pos:Number):void {
-			_currentTime = pos;
-			_soundChannel.stop();
-			_sound.length
-			_soundChannel = _sound.play(_currentTime * 1000, 0, _soundTransform);
+		public function setVolume(value:Number):void {
+			// HTML5 Audio can't have more than 100% loudness. Flash can.
+			_soundTransform.volume = Math.min(1.0, value);
 
-			didStartPlaying();
-		}
-
-		public function getDuration():Number {
-			return _duration;
-		}
-
-		public function setVolume(volume:Number):void {
-			_volume = volume;
-			_soundTransform.volume = volume;
-
-			if (_soundChannel != null) {
+			if (_soundChannel !== null) {
 				_soundChannel.soundTransform = _soundTransform;
 			}
 		}
 
-		public function setMuted(muted:Boolean):void {
-
-			// ignore if already set
-			if ( (muted && _isMuted) || (!muted && !_isMuted))
-				return;
-
-			if (muted) {
-				_preMuteVolume = _soundTransform.volume;
-				setVolume(0);
-			} else {
-				setVolume(_preMuteVolume);
-			}
-
-			_isMuted = muted;
-		}
-
 	}
-
+	
 }
+
