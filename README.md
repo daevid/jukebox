@@ -37,11 +37,33 @@ These are optional settings for the Flash Fallback:
 * flashMediaElement = 'url/to/FlashMediaElement.swf' (default is ./swf/FlashMediaElement.swf)
 * enforceFlash = 'boolean' will enforce flash usage of instead using html5 as default audio api.
 
-The stream.spritemap.entry looks like this: ("entry" is the name of the spritemap entry which is used for autoplay or stream playback)
+An example spritemap.entry looks like this: ("entry" is the name of the spritemap entry which is used for autoplay or stream playback)
 
 * spritemap.entry.start = *time*
 * spritemap.entry.end = *time*
 * spritemap.entry.loop = *Boolean*
+
+
+```js
+var mySettings = {
+	// ...
+	spritemap: {
+
+		"background-music": {
+			"start": 1.00,
+			"end": 20.00,
+			"loop": false
+		},
+
+		"test-entry": {
+			"start": 21.00,
+			"end": 25.00
+		}
+	}
+	// ...
+};
+```
+
 
 
 Setting Up a Sound Sprite
