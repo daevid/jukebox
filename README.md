@@ -1,8 +1,10 @@
 
-Zynga's Jukebox
+Zynga's JukeBox
 ==============
 
-The Jukebox is a component for playing sounds and music with the usage of sprites with a special focus on performance and cross-device deployment. It is known to run even on Android 1.6+ devices and needs very few resources compared to other solutions on the web.
+The JukeBox is a component for playing sounds and music with the usage of sprites with a special
+focus on performance and cross-device deployment. It is known to run even on Android 1.6+ devices
+and needs very few resources compared to other solutions on the web.
 
 
 Features
@@ -14,20 +16,26 @@ Features
 * Playback of Sound Sprite entries
 * Codec detection
 * Feature detection
-* Multi-Stream ("channels") support
+* Multi-Stream and Multi-Channel support
 * Automatic work delegation of busy audio streams
 * Automatic stream correction
+* Support for multiple JukeBox instances
 * Support for platforms where only one stream can be played in parallel (IE9 / iOS)
 
 
 Options
 -------
 
-Jukebox has several options that are configured per-stream, meaning the Jukebox constructor itself requires an array of stream settings. A stream setting has the following properties:
+These are the supported JukeBox settings you can pass through its constructor:
 
 * resources = *array of urls to sound sprites*
 * autoplay = 'spritemap-entry'
 * spritemap = 'object'
+
+These are optional settings for the Flash Fallback:
+
+* flashMediaElement = 'url/to/FlashMediaElement.swf' (default is ./swf/FlashMediaElement.swf)
+* enforceFlash = 'boolean' will enforce flash usage of instead using html5 as default audio api.
 
 The stream.spritemap.entry looks like this: ("entry" is the name of the spritemap entry which is used for autoplay or stream playback)
 
@@ -61,10 +69,20 @@ Additionally, iOS' security model prevents a website from playing sounds without
 Usage
 -----
 
-First, you will have to initialize the Jukebox. The Jukebox itself will return the Stream instances within an array.
+First, you will have to know that there can be several JukeBox instances in parallel.
+There's a transparent JukeBox Manager running in the background that will manage work delegation and stream corrections.
+
+This JukeBox Manager will automatically create more JukeBox instances for playback (if your system supports it) and
+handles work delegation. For example if you are calling a busy JukeBox to play a spritemap entry (and you aren't enforcing
+playback with the optional second argument) it will create a new JukeBox that will do the work.
+
+So background music is possible to be played at the first JukeBox and you can play another spritemap entry of it in parallel - without having to pause Background Music.
+
+This code example shows you how to create a single instance of a JukeBox.
+(Note that you won't see anything of the transparent JukeBox Manager)
 
 ```js
-var myStreams = new Jukebox([{
+var myJukeBox = new JukeBox({
 
 	"resources": [
 		"./url/to/spritemap.mp3",
@@ -90,39 +108,37 @@ var myStreams = new Jukebox([{
 	
 	}
 
-}], function(jukebox) {
-
-	// This is how you can access the transparent jukebox
-	// e.g. jukebox.features and jukebox.codecs
-
 });
 
-// Example call of the Stream API
-myStreams[0].play('background-birds');
+// Example call of the JukeBox API
+// Note that this is a looping background
+myJukeBox.play('background-birds');
 
 window.setTimeout(function() {
-	myStreams[0].play('cricket-chirp'); // will delegate the work to myStreams[1], because myStreams[0] is busy
+	myJukeBox.play('cricket-chirp');
+	// will delegate the work to the internal next free channel,
+	// because the origin JukeBox is busy
 }, 1000);
+
+window.setTimeout(function() {
+	myJukeBox.play('cricket-chirp', true);
+	// will enforce playback and result will be instant playback and no background music afterwards
+}, 5000);
 ```
 
 
-After you've initialized the streams, you can use the public API on a per-stream level.
-Don't worry about busy streams, they will automatically delegate the work to the next free stream.
-If only one parallel stream is supported, the entry will be played instantly.
-
-
-Public (per-Stream) API
+Public (per-JukeBox) API
 -----------------------
 
-Example of a Stream API Call:
+Example of a JukeBox API Call:
 
 ```js
-// Note that myStreams was initialized already like in the previous example (see > Usage)
+// Note that myJukeBox was initialized already like in the previous example (see > Usage)
 
-myStreams[0].play("background-music"); // fastest
-myStreams[0].play(20.10); // slower
-myStreams[0].play("1:23:45"); // also valid, but not recommended
+myJukeBox.play("background-music"); // fastest
+myJukeBox.play(20.10); // slower, will search for matching spritemap entry
 ```
+
 
 * `play(to)`
 	* to: (float) time in seconds
@@ -131,7 +147,6 @@ myStreams[0].play("1:23:45"); // also valid, but not recommended
 This function will start playback of the given spritemap entry.
 You can pass through a value of a time (which is inside a sprite entry), too. It will automatically loop a background music
 if it was configured to loop.
-
 
 
 * `stop()`
