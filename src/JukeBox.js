@@ -457,10 +457,12 @@ JukeBox.Manager = function(enforceFlash) {
 	this.__detectFeatures();
 
 
-	var that = this;
-	window.setInterval(function() {
-		that.__loop();
-	}, 500);
+	if (!this.__intervalId) {
+		var that = this;
+		this.__intervalId = window.setInterval(function() {
+			that.__loop();
+		}, 50);
+	}
 
 };
 
