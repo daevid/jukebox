@@ -1,15 +1,24 @@
 <!doctype html>
 <html>
 <head>
-	<title>DUBSTEP JukeBox Demo</title>
+	<title>Zynga's JukeBox - Sequencing Demo</title>
     <meta charset="utf-8" />
-
 	<script src="../../src/JukeBox.js"></script>
 
 	<style>
-
-	tr {
-		border-bottom: 1px dotted #000;
+	td {
+		margin: 5px 10px;
+		padding: 3px 4px;
+		border: 1px dotted #ccc;
+	}
+	td, td.active {
+		background-color: #fff;
+		-webkit-transition-property: 'background-color';
+		-webkit-transition-timing-function: ease-out;
+		-webkit-transition-duration: 1s;
+	}
+	td.active {
+		background-color: #0f0;
 	}
 	input {
 		width: 2em;
@@ -20,9 +29,11 @@
 <body>
 
 <h3>DUBSTEP HIT MAKER</h3>
-<span>Extended Coolness For the Internet Version</span>
+<span>A simple sequencing demo using Zynga's JukeBox.</span>
 <br>
-<span><a href="http://www.musicradar.com/news/tech/free-music-samples-download-loops-hits-and-multis-217833/79">Used these dubstep sound samples</a></span>
+<span>
+	This demo is using sound samples from <a href="http://www.musicradar.com/news/tech/free-music-samples-download-loops-hits-and-multis-217833/79">this site</a>.
+</span>
 <br>
 <br>
 
@@ -188,7 +199,6 @@ var Sequencer = {},
 
 		}
 
-
 		this.__timelineActions = timelineActions;
 
 	};
@@ -198,21 +208,29 @@ var Sequencer = {},
 
 		if (!this.__timelineActions) {
 			this.generate();
+		} else if (!this.__timelineActions.length) {
+			// Nothing to do, dude. Why playing silence then?
+			return false;
 		}
 
-		var started = Date.now ? Date.now() : +new Date();
 
-		var that = this;
+		var started = Date.now ? Date.now() : +new Date(),
+			that = this;
+
 		this.__intervalId = window.setInterval(function() {
 
 			var now = (Date.now ? Date.now() : +new Date()),
 				current = (now - started) % that.__playbackLength,
 				currentX = Math.floor(current / 4000);
 			
-			var elements = document.querySelectorAll('td.x' + currentX);
-			for (var e = 0, el = elements.length; e < el; e++) {
-				var element = elements[e];
-				element.style.backgroundColor = 'green';
+			var oldElements = document.querySelectorAll('td'),
+				newElements = document.querySelectorAll('td.x' + currentX);
+
+			for (var o = 0, ol = oldElements.length; o < ol; o++) {
+				oldElements[o].className = oldElements[o].className.replace(/\sactive/,'');
+			}
+			for (var e = 0, el = newElements.length; e < el; e++) {
+				newElements[e].className += ' active';
 			}
 
 			for (var t = 0, l = that.__timelineActions.length; t < l; t++) {
@@ -238,7 +256,6 @@ var Sequencer = {},
 
 		}, this.__playbackLength);
 
-	
 	}
 
 })();
