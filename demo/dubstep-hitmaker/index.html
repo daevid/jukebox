@@ -87,8 +87,9 @@ var Sequencer = {},
 	var spritemaps = [],
 		audioFiles = {
 			0: 'Bass',
-			1: 'Synth',
-			2: 'Organ'
+			1: 'Beat',
+			2: 'Synth',
+			3: 'Organ'
 		},
 		audioExtensions = [ 'ac3', 'm4a', 'mp3', 'ogg' ];
 
@@ -116,6 +117,7 @@ var Sequencer = {},
 	for (var id = 0, l = spritemaps.length; id < l; id++) {
 		DubStep[id] = new JukeBox(spritemaps[id]);
 	}
+
 
 
 	// FIXME: HACK that there can't be more channels than available JukeBoxes
@@ -152,7 +154,6 @@ var Sequencer = {},
 		table.appendChild(tr);
 
 	}
-
 
 	
 
@@ -208,7 +209,9 @@ var Sequencer = {},
 
 		if (!this.__timelineActions) {
 			this.generate();
-		} else if (!this.__timelineActions.length) {
+		}
+		
+		if (!this.__timelineActions.length) {
 			// Nothing to do, dude. Why playing silence then?
 			return false;
 		}
@@ -260,204 +263,6 @@ var Sequencer = {},
 
 })();
 
-</script>
-
-
-<script>
-
-var playDemo;
-(function() {
-
-	// FIXME: REMOVE THIS WHEN READY
-	return;
-
-	var cajons = new JukeBox({
-
-		// optional, required for MSIE-Environments =/
-		// enforceFlash: true,
-		
-		resources: [
-			'media/spritemap-cajon.ac3',
-			'media/spritemap-cajon.mp3',
-			'media/spritemap-cajon.m4a',
-			'media/spritemap-cajon.ogg'
-		],
-
-		spritemap: {
-
-			"cajon-1": {
-				"start": 0.00,
-				"end": 4.20
-			},
-
-			"cajon-2": {
-				"start": 5.00,
-				"end": 9.30 // wanna repeat? 4.1 sounds better than 4.3 seconds
-			},
-
-		}
-
-	});
-
-	var arpeggios = new JukeBox({
-	
-		resources: [
-			'media/spritemap-arpeggios.ac3',
-			'media/spritemap-arpeggios.mp3',
-			'media/spritemap-arpeggios.m4a',
-			'media/spritemap-arpeggios.ogg'
-		],
-
-		spritemap: {
-		
-			'arpeggio-1': {
-				'start': 0.00,
-				'end': 10.70
-			},
-
-			'arpeggio-2': {
-				'start': 11.00,
-				'end': 21.70
-			},
-
-			'arpeggio-3': {
-				'start': 22.00,
-				'end': 32.70
-			}
-
-		}
-
-	})
-
-
-	/*
-	 * Below are the actions that are timed via millisecond pointers
-	 * inside the whole demo timerange. The demo will go from 0 to 40000ms.
-	 * Sorry for bad music, but I'm not a musician and I'm not a compositor =D
-	 */
-	var timelineActions = [{
-		at: 0,
-		exec: function() {
-			cajons.play('cajon-1', true);
-		}
-	}, {
-		at: 4200,
-		exec: function() {
-			cajons.play('cajon-2', true);
-		}
-	}, {
-		at: 4100,
-		exec: function() {
-			arpeggios.play('arpeggio-1', true);
-		}
-	}, {
-		at: 15100,
-		exec: function() {
-			arpeggios.play('arpeggio-2', true);
-		}
-	}, {
-		at: 15300,
-		exec: function() {
-			cajons.play('cajon-2', true);
-		}
-	}, {
-		at: 15300 + 4100,
-		exec: function() {
-			cajons.play('cajon-2', true);
-		}
-	}, {
-		at: 15300 + 2 * 4100,
-		exec: function() {
-			cajons.play('cajon-2', true);
-		}
-	}, {
-		at: 15300 + 3 * 4100,
-		exec: function() {
-			cajons.play('cajon-2', true);
-		}
-	}, {
-		at: 15300 + 4 * 4100,
-		exec: function() {
-			cajons.play('cajon-2', true);
-		}
-	}, {
-		at: 27950,
-		exec: function() {
-			arpeggios.play('arpeggio-3', true);
-		}
-	}];
-
-
-	var demoLengthInSeconds = 40;
-
-	playDemo = (function(){
-
-		/*
-		 * This is all required for the UI stuff
-		 */
-		var markers = {
-			timeline: document.getElementById('timeline-marker'),
-			cajons: document.getElementById('cajons-marker'),
-			arpeggios: document.getElementById('arpeggios-marker')
-		};
-
-		var currentTime = { timeline: 0, cajons: 0, arpeggios: 0 };
-		var markerPercentage = { timeline: 0, cajons: 0, arpeggios: 0 };
-
-
-		var intervalId = null, started, now;
-
-		return function() {
-		
-			if (!intervalId) {
-
-				started = (Date.now ? Date.now() : +new Date());
-
-				intervalId = window.setInterval(function() {
-
-					var now = (Date.now ? Date.now() : +new Date()),
-						current = (now - started) % (demoLengthInSeconds * 1000);
-
-					/* UI STUFF START */
-					currentTime.timeline = current / 1000;
-					currentTime.cajons = cajons.getCurrentTime();
-					currentTime.arpeggios = arpeggios.getCurrentTime();
-
-					markerPercentage.timeline = Math.round(currentTime.timeline / demoLengthInSeconds * 100);
-					markerPercentage.cajons = Math.round(currentTime.cajons / 9.3 * 100);
-					markerPercentage.arpeggios = Math.round(currentTime.arpeggios / 32.70 * 100);
-
-					markers.timeline.innerText = currentTime.timeline.toString().substr(0,4);
-					markers.cajons.innerText = currentTime.cajons.toString().substr(0,4);
-					markers.arpeggios.innerText = currentTime.arpeggios.toString().substr(0,4);
-
-					markers.timeline.style.left = markerPercentage.timeline + '%';
-					markers.cajons.style.left = markerPercentage.cajons + '%';
-					markers.arpeggios.style.left = markerPercentage.arpeggios + '%';
-					/* UI STUFF END */
-
-
-					/*
-					 * This will start the playback of different sound sprite entries
-					 * for the "timed" action in the timeline.
-					 *
-					 * Note that current is modulo, so it's between 0 and 40*1000 (ms)
-					 */
-					for (var t = 0, l = timelineActions.length; t < l; t++) {
-						if (current >= timelineActions[t].at && current <= (timelineActions[t].at + 200)) {
-							timelineActions[t].exec();
-						}
-					
-					}
-
-				}, 50);
-			}
-		
-		};
-	
-	})();
-
-})();
 </script>
 </body>
 </html>
