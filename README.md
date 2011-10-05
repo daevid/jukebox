@@ -23,6 +23,12 @@ Features
 * Support for platforms where only one stream can be played in parallel (IE9 / iOS)
 
 
+Known Bugs / Future Improvements
+--------------------------------
+
+* JukeBox Volume is not inherited on created Channels
+
+
 Options
 -------
 

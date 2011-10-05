@@ -34,9 +34,6 @@ var JukeBox = function(settings, id) {
 		throw "No playable resource found.";
 	}
 
-	// JukeBox Manager ManageZ Managing Ztuff. =D
-	JukeBox.__manager.__streams.push(this);
-
 	return this;
 
 };
@@ -49,23 +46,86 @@ JukeBox.__streamId = 0;
 JukeBox.prototype = {
 
 	defaults: {
-		resources: [],   // The resources array containing the audio file urls
+		resources: [], // The resources array containing the audio file urls
 		autoplay: false, // Autoplay is deactivated by default
 		spritemap: {}, // The spritemap object per-stream
 		loop: false, // Loop the complete stream again when last entry was played?
 		flashMediaElement: './swf/FlashMediaElement.swf',
-		enforceFlash: false
+		enforceFlash: false,
+		canplaythroughTimeout: 1000, // timeout if EventListener fails
 	},
+
+	__addToManager: function(event) {
+
+		if (!this.__wasAddedToManager) {
+			JukeBox.__manager.__streams.push(this);
+			this.__wasAddedToManager = true;
+		}
+
+	},
+
+	/*
+	__log: function(title, desc) {
+
+		if (!this.__logElement) {
+			this.__logElement = document.createElement('ul');
+			document.body.appendChild(this.__logElement);
+		}
+
+		var that = this;
+		window.setTimeout(function() {
+			var item = document.createElement('li');
+			item.innerHTML = '<b>' + title + '</b>: ' + (desc ? desc : '');
+			that.__logElement.appendChild(item);
+		}, 0);
+
+	},
+
+	__updateBuffered: function(event) {
+
+		var buffer = this.context.buffered;
+
+		if (buffer) {
+
+			for (var b = 0; b < buffer.length; b++) {
+				this.__log(event.type, buffer.start(b).toString() + ' / ' + buffer.end(b).toString());
+			}
+
+		}
+
+	},
+	*/
 
 	__init: function() {
 
-		var settings = this.settings,
+		var that = this,
+			settings = this.settings,
 			features = JukeBox.__manager.features || {};
 
 		if (features.html5audio) {
 
 			this.context = new Audio();
 			this.context.src = this.resource;
+
+
+			// This will add the stream to the manager's stream cache,
+			// there's a fallback timeout if the canplaythrough event wasn't fired
+			var addFunc = function(event){ that.__addToManager(event); };
+			this.context.addEventListener('canplaythrough', addFunc, true);
+
+			// Uh, Oh, What is it good for? Uh, Oh ...
+			/*
+				var bufferFunc = function(event) { that.__updateBuffered(event); };
+				this.context.addEventListener('loadedmetadata', bufferFunc, true);
+				this.context.addEventListener('progress', bufferFunc, true);
+			*/
+
+			// This is the timeout, we will penetrate the stream anyways
+			window.setTimeout(function(){
+				that.context.removeEventListener('canplaythrough', addFunc, true);
+				addFunc('timeout');
+			}, settings.canplaythroughTimeout);
+
 
 			// old WebKit
 			this.context.autobuffer = true;
@@ -200,19 +260,26 @@ JukeBox.prototype = {
 
 	},
 
-	__backgroundHackForiOS: function(reset) {
+	/*
+	 * This is the background hack for iOS and other single-channel systems
+	 * It allows playback of a background music, which will be overwritten by playbacks
+	 * of other sprite entries. After these entries, background music continues.
+	 *
+	 * This allows us to trick out the iOS Security Model after initial playback =)
+	 */
+	__backgroundHackForiOS: function() {
 
-		if (!this.__backgroundMusic) {
+		if (this.__backgroundMusic === undefined) {
 			return;
 		}
 
-		if (reset) {
+		if (this.__backgroundMusic.started === undefined) {
+			this.__backgroundMusic.started = Date.now ? Date.now() : +new Date();
 			this.setCurrentTime(this.__backgroundMusic.start);
 		} else {
-
-			this.__backgroundMusic.__lastPointer = (((new Date()).getTime() - this.__backgroundMusic.started) / 1000) % (this.__backgroundMusic.end - this.__backgroundMusic.start) + this.__backgroundMusic.start;
+			var now = Date.now ? Date.now() : +new Date();
+			this.__backgroundMusic.__lastPointer = (( now - this.__backgroundMusic.started) / 1000) % (this.__backgroundMusic.end - this.__backgroundMusic.start) + this.__backgroundMusic.start;
 			this.play(this.__backgroundMusic.__lastPointer);
-
 		}
 
 	},
@@ -231,7 +298,7 @@ JukeBox.prototype = {
 	 */
 	play: function(pointer, enforce) {
 
-		if (this.isPlaying && enforce !== true) {
+		if (this.isPlaying && enforce !== true && !this.__backgroundMusic) {
 			JukeBox.__manager.addQueueEntry(pointer, this.id);
 			return;
 		}
@@ -284,7 +351,7 @@ JukeBox.prototype = {
 		this.isPlaying = undefined;
 
 		// Was a Background Music played already?
-		if (this.__backgroundMusic && this.__backgroundMusic.started) {
+		if (this.__backgroundMusic) {
 			this.__backgroundHackForiOS();
 		} else {
 			this.context.pause();
@@ -443,7 +510,9 @@ JukeBox.prototype = {
 
 
 
-
+/*
+ * This is the transparent JukeBox Manager that runs in the background
+ */
 JukeBox.Manager = function(enforceFlash) {
 
 	this.features = {};
@@ -461,7 +530,7 @@ JukeBox.Manager = function(enforceFlash) {
 		var that = this;
 		this.__intervalId = window.setInterval(function() {
 			that.__loop();
-		}, 50);
+		}, 100);
 	}
 
 };
@@ -487,7 +556,7 @@ JukeBox.Manager.prototype = {
 				{ e: 'mp4', m: [ 'audio/mp4', 'video/mp4' ] },
 				{ e: 'ogg', m: [ 'application/ogg', 'audio/ogg', 'audio/ogg; codecs="theora, vorbis"', 'video/ogg', 'video/ogg; codecs="theora, vorbis"' ] },
 				{ e: 'wav', m: [ 'audio/wave', 'audio/wav', 'audio/wav; codecs="1"', 'audio/x-wav', 'audio/x-pn-wav' ] },
-				{ e: 'webm', m: [ 'audio/webm', 'video/webm' ] }
+				{ e: 'webm', m: [ 'audio/webm', 'audio/webm; codecs="vorbis"', 'video/webm' ] }
 			];
 
 			var mime, extension;
@@ -545,6 +614,17 @@ JukeBox.Manager.prototype = {
 		// All Android devices support Flash. Stunning!
 		this.features.flashaudio = !!navigator.mimeTypes['application/x-shockwave-flash'] || !!navigator.plugins['Shockwave Flash'] || false;
 
+		// Internet Explorer
+		if (window.ActiveXObject){
+			try {
+				var flash = new ActiveXObject('ShockwaveFlash.ShockwaveFlash.10');
+				this.features.flashaudio = true;
+			} catch(e) {
+				// Throws an error if the version isn't available
+			}
+		}
+
+		// Allow enforce of Flash Usage
 		if (this.__enforceFlash) {
 			this.features.flashaudio = true;
 		}
@@ -563,7 +643,7 @@ JukeBox.Manager.prototype = {
 
 				// Flash Runtime on Android also supports GSM codecs, but impossible to detect
 				this.codecs['3gp'] = 'audio/3gpp';
-				this.codecs['amr'] = 'audio/amr';
+				this.codecs.amr = 'audio/amr';
 
 
 				// TODO: Multi-Channel support on ActionScript-side
@@ -637,9 +717,9 @@ JukeBox.Manager.prototype = {
 				stream.play(queueEntry.pointer, true);
 
 			// Nothing to do, so repeat backgroundMusic for Single-Channel Mode
-			} else if (stream.__backgroundMusic) {
-				if (currentPosition >= stream.__backgroundMusic.end) {
-					stream.__backgroundHackForiOS(true);
+			} else if (stream.__backgroundMusic && !stream.isPlaying) {
+				if (streamPosition > stream.__backgroundMusic.end) {
+					stream.__backgroundHackForiOS();
 				}
 			}
 
