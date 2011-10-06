@@ -18,8 +18,8 @@ Features
 
 Important: The old IE9 beta and iOS are known to allow only one JukeBox to run, no parallel playback possible.
 
-JukeBox Manager adds the following features:
---------------------------------------------
+
+**JukeBox Manager adds the following features:**
 
 * Codec Detection
 * Feature Detection
