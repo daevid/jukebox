@@ -10,23 +10,35 @@ and needs very few resources compared to other solutions on the web.
 Features
 --------
 
-* HTML5 audio
-* Flash playback as fallback (support for Android 1.6)
-* Targeted at low-end devices and mobile platforms
-* Playback of Sound Sprite entries
-* Codec detection
-* Feature detection
-* Multi-Stream and Multi-Channel support
-* Automatic work delegation of busy audio streams
-* Automatic stream correction
-* Support for multiple JukeBox instances
-* Support for platforms where only one audio stream can be played in parallel (IE9 / iOS)
+* Targets low-end devices and mobile platforms
+* HTML5 Audio
+* Flash Audio as fallback (support for Android 1.6)
+* Sound-Spritemap Entries for easier playback
+* Multiple JukeBoxes for parallel playback
+
+Important: The old IE9 beta and iOS are known to allow only one JukeBox to run, no parallel playback possible.
+
+JukeBox Manager adds the following features:
+--------------------------------------------
+
+* Codec Detection
+* Feature Detection
+* Automatic Work Delegation for busy JukeBoxes
+* Automatic Stream Correction (useful for slow implementations)
+* Automatic Looping for Sound-Spritemap entries
+* Playback of Background Music
+
+**Using JukeBox without JukeBox Manager:**
+
+It is not recommended to use JukeBox without the JukeBox Manager, but it's still possible.
+The JukeBox Manager offers Codec and Feature detection - to determine which kind of audio codecs will playback properly in your Environment.
+If you want to still use JukeBox without JukeBox Manager, you will have to set *resources* to an Array containing only one resource.
 
 
 Known Bugs / Future Improvements
 --------------------------------
 
-* JukeBox Volume is not inherited on created Clones
+* The JukeBox Volume is not inherited on created Clones
 
 
 Options
@@ -49,8 +61,7 @@ An example spritemap.entry looks like this: ("entry" is the name of the spritema
 * spritemap.entry.end = *time*
 * spritemap.entry.loop = *Boolean*
 
-*Using JukeBox without JukeBox Manager*: If you want to use JukeBox without JukeBox Manager (which is definitely NOT RECOMMENDED), you will have to set resources
-to an Array containing ONLY 1 ENTRY. Why? Because JukeBox Manager does the feature and codec detection stuff.
+
 
 
 ```js
@@ -94,23 +105,20 @@ Known Issues
 
 There's the problem with asynchronous playback, which can't be avoided on the JavaScript-side of the implementation. Delays were measured up to 820ms on initial playback. iOS has also a problem when falling into sleep mode, as iTunes will play back the sound file afterwards without stopping it.
 
-Additionally, iOS' security model prevents a website from playing sounds without prior user interaction. Thus, you will have to use a button or similar that will call myStreams.play('background-birds') or similar (see > Usage for more details).
+Additionally, iOS' security model prevents a website from playing sounds without prior user interaction. Thus, you will have to use a button or similar that will call myJukeBox.play('background-birds') or similar (see > Usage for more details).
 
 
 Usage
 -----
 
 First, you will have to know that there can be several JukeBox instances in parallel.
-There's a transparent JukeBox Manager running in the background that will manage work delegation and stream corrections.
 
-This JukeBox Manager will automatically create more JukeBox instances for playback (if your system supports it) and
-handles work delegation. For example if you are calling a busy JukeBox to play a spritemap entry (and you aren't enforcing
-playback with the optional second argument) it will create a new JukeBox that will do the work.
+The transparent JukeBox Manager allows so-called work delegation. This work delegation concept lets you use a single JukeBox. You create only one instance, but you are able to play multiple sounds in parallel with it.
 
-So background music is possible to be played at the first JukeBox and you can play another spritemap entry of it in parallel - without having to pause Background Music.
+For example, you can have an *autoplay* setup for a background music, but you can still play other sound spritemap entries afterwards, while the background music is still played.
 
-This code example shows you how to create a single instance of a JukeBox.
-(Note that you won't see anything of the transparent JukeBox Manager)
+
+**Creating a JukeBox**
 
 ```js
 var myJukeBox = new JukeBox({
@@ -147,13 +155,14 @@ myJukeBox.play('background-birds');
 
 window.setTimeout(function() {
 	myJukeBox.play('cricket-chirp');
-	// will delegate the work to the internal next free channel,
+	// will delegate the work to the internal next free clone,
 	// because the origin JukeBox is busy
 }, 1000);
 
 window.setTimeout(function() {
 	myJukeBox.play('cricket-chirp', true);
-	// will enforce playback and result will be instant playback and no background music afterwards
+	// will enforce playback and result will be instant playback
+	// and no background music is played afterwards
 }, 5000);
 ```
 
@@ -171,9 +180,10 @@ myJukeBox.play(20.10); // slower, will search for matching spritemap entry
 ```
 
 
-* `play(to)`
+* `play(to, enforce)`
 	* to: (float) time in seconds
 	* to: (string) spritemap-entry
+	* enforce: (boolean) true will disable work delegation and cause instant playback
 
 This function will start playback of the given spritemap entry.
 You can pass through a value of a time (which is inside a sprite entry), too. It will automatically loop a background music
@@ -202,6 +212,7 @@ It will start playback at the last cached position. If no position was cached be
 	* to: (float) volume (min = 0, max = 1.0)
 
 This function will set the volume to the given value.
+Hint: Some systems like iOS have no support for modifying the volume.
 
 
 * `getCurrentTime()`
@@ -213,5 +224,5 @@ This function will return the current position of the stream.
 	* to: (float) time in seconds
 
 This function will *try* to set the current position of the stream. It may fail if the stream is not ready for that, 
-e.g. download is still in progress or background process is not ready for playback etc.
+e.g. if download is still in progress or background process is not ready for playback etc.
 
