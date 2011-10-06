@@ -20,13 +20,13 @@ Features
 * Automatic work delegation of busy audio streams
 * Automatic stream correction
 * Support for multiple JukeBox instances
-* Support for platforms where only one stream can be played in parallel (IE9 / iOS)
+* Support for platforms where only one audio stream can be played in parallel (IE9 / iOS)
 
 
 Known Bugs / Future Improvements
 --------------------------------
 
-* JukeBox Volume is not inherited on created Channels
+* JukeBox Volume is not inherited on created Clones
 
 
 Options
