@@ -34,7 +34,7 @@ Options
 
 These are the supported JukeBox settings you can pass through its constructor:
 
-* resources = *array of urls to sound sprites*
+* resources = *array of urls to sound files*
 * autoplay = 'spritemap-entry'
 * spritemap = 'object'
 
@@ -48,6 +48,9 @@ An example spritemap.entry looks like this: ("entry" is the name of the spritema
 * spritemap.entry.start = *time*
 * spritemap.entry.end = *time*
 * spritemap.entry.loop = *Boolean*
+
+*Using JukeBox without JukeBox Manager*: If you want to use JukeBox without JukeBox Manager (which is definitely NOT RECOMMENDED), you will have to set resources
+to an Array containing ONLY 1 ENTRY. Why? Because JukeBox Manager does the feature and codec detection stuff.
 
 
 ```js

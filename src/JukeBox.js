@@ -31,15 +31,21 @@ var JukeBox = function(settings, origin) {
 
 	this.resource = null;
 
+	// Use JukeBox Manager for Codec and Feature Detection
 	if (JukeBox.__manager) {
 		this.resource = JukeBox.__manager.getPlayableResource(this.settings.resources);
+
+	// No JukeBox Manager? So it's a forced Playback
+	} else if (this.settings.resources.length === 1) {
+		this.resource = this.settings.resources[0];
 	}
 
-	if (this.resource !== null) {
-		this.__init();
-	} else {
+	// Still no resource? Stupidz!
+	if (this.resource === null) {
 		// GrandMa should update her Browser -.-
-		throw "No playable resource found.";
+		throw "Either your Browser can't play the given resources - or you have missed to include JukeBox Manager.";
+	} else {
+		this.__init();
 	}
 
 	return this;
