@@ -58,6 +58,10 @@ package
 					return _audioElement.setCurrentTime(pointer);
 				});
 
+				ExternalInterface.addCallback('getVolume', function():Number {
+					return _audioElement.getVolume();
+				});
+
 				ExternalInterface.addCallback('setVolume', function(value:Number):void {
 					_audioElement.setVolume(value);
 				});

@@ -116,6 +116,16 @@ package
 			}
 		}
 
+		public function getVolume():Number {
+		
+			if (_soundTransform !== null) {
+				return _soundTransform.volume;
+			}
+
+			return 1;
+
+		}
+
 	}
 	
 }

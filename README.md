@@ -35,12 +35,6 @@ The JukeBox Manager offers Codec and Feature detection - to determine which kind
 If you want to still use JukeBox without JukeBox Manager, you will have to set *resources* to an Array containing only one resource.
 
 
-Known Bugs / Future Improvements
---------------------------------
-
-* The JukeBox Volume is not inherited on created Clones
-
-
 Options
 -------
 

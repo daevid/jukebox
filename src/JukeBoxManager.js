@@ -172,15 +172,23 @@ JukeBox.Manager.prototype = {
 			&& this.__jukeBoxesLength + this.__clonesLength < this.features.channels
 		) {
 
-			var originJukeBox = this.__getJukeBoxById(this.__queue[0].origin);
+			var queueEntry = this.__queue[0],
+				originJukeBox = this.__getJukeBoxById(queueEntry.origin);
 
 			if (originJukeBox) {
-				var freeClone = this.__getClone(this.__queue[0].origin, originJukeBox.settings);
+				var freeClone = this.__getClone(queueEntry.origin, originJukeBox.settings);
 
 				// Use free clone for playback
 				if (freeClone !== null) {
+
+					if (this.features.volume === true) {
+						var originJukeBox = this.__jukeBoxes[queueEntry.origin];
+						originJukeBox && freeClone.setVolume(originJukeBox.getVolume());
+					}
+
 					this.addJukeBox(freeClone);
-					freeClone.play(this.__queue[0].pointer, true);
+					freeClone.play(queueEntry.pointer, true);
+
 				}
 			}
 

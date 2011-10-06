@@ -412,8 +412,16 @@ JukeBox.prototype = {
 	HTML5API: {
 
 		/*
+		 * This will return the current volume
+		 * @returns {Number} volume (from 0 to 1.0)
+		 */
+		getVolume: function() {
+			return this.context.volume || 1;
+		},
+
+		/*
 		 * This will set the volume to a given value
-		 * @param {Number} value The float value (0 - 1.0)
+		 * @param {Number} value The float value (from 0 to 1.0)
 		 */
 		setVolume: function(value) {
 			this.context.volume = value;
@@ -454,8 +462,23 @@ JukeBox.prototype = {
 	FLASHAPI: {
 
 		/*
+		 * This will return the current volume
+		 * @returns {Number} volume (from 0 to 1.0)
+		 */
+		getVolume: function() {
+
+			// Avoid stupid exceptions, wait for JavaScript API to be ready
+			if (this.context && typeof this.context.getVolume === 'function') {
+				return this.context.getVolume();
+			}
+
+			return 1;
+
+		},
+
+		/*
 		 * This will set the volume to a given value
-		 * @param {Number} value The float value (0 - 1.0)
+		 * @param {Number} value The float value (from 0 to 1.0)
 		 */
 		setVolume: function(value) {
 
