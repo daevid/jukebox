@@ -41,6 +41,9 @@ JukeBox.Manager.prototype = {
 
 	__detectFeatures: function() {
 
+		/*
+		 * HTML5 Audio Support
+		 */
 		var audio = window.Audio && new Audio();
 
 		if (audio && audio.canPlayType && !this.__enforceFlash) {
@@ -113,7 +116,12 @@ JukeBox.Manager.prototype = {
 
 
 
-		// All Android devices support Flash. Stunning!
+		/*
+		 * Flash Audio Support
+		 *
+		 * Hint: All Android devices support Flash, even Android 1.6 ones
+		 *
+		 */
 		this.features.flashaudio = !!navigator.mimeTypes['application/x-shockwave-flash'] || !!navigator.plugins['Shockwave Flash'] || false;
 
 		// Internet Explorer
@@ -133,7 +141,7 @@ JukeBox.Manager.prototype = {
 
 		if (this.features.flashaudio) {
 
-			// Overwrite codecs only if there's no html5audio support
+			// Overwrite Codecs only if there's no HTML5 Audio support
 			if (!this.features.html5audio) {
 
 				// Known to work with every Flash Implementation
