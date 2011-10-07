@@ -1,0 +1,340 @@
+<!doctype html>
+<html>
+<head>
+	<title>Zynga's JukeBox - Sequencer Demo</title>
+    <meta charset="utf-8" />
+	<script src="../../src/JukeBox.js"></script>
+	<script src="../../src/JukeBoxManager.js"></script>
+	<script src="src/Sequencer.js"></script>
+
+	<style>
+
+	body {
+		background: #222;
+	}
+
+	button {
+		background: #eee;
+		border: 1px solid #666;
+		border-radius: 5px 5px 5px 5px;
+	}
+
+	button:hover {
+		background: #fff;
+	}
+
+	button:active {
+		background: #999;
+	}
+
+	#demo {
+		display: block;
+		width: 60%;
+		min-width: 500px;
+		height: auto;
+		margin: 0 auto;
+		padding: 0;
+		color: #fff;
+		background: #444;
+		border: 1px solid #222;
+		border-radius: 15px 15px 15px 15px;
+	}
+
+	h3 {
+		margin: 0;
+		padding: 10px;
+		color: #fff;
+		border-radius: 15px 15px 0px 0px;
+	}
+
+	#controls {
+		background: #888;
+		padding: 3px 10px;
+	}
+
+	#timeline {
+		display: block;
+		width: 100%;
+		margin: 0;
+		padding: 5px 0px;
+		overflow-x: scroll;
+		overflow-y: hidden;
+	}
+
+
+
+
+	#timeline td {
+		width: 30px;
+		height: 30px;
+		margin: 2px 2px;
+		padding: 2px;
+		border: 1px dotted #ccc;
+		background: #888;
+		text-align: center;
+	}
+
+	#timeline td, #timeline td.active {
+		-webkit-transition-property: 'background-color';
+		-webkit-transition-timing-function: ease-out;
+		-webkit-transition-duration: 1s;
+	}
+
+	#timeline td.active {
+		background: #8c8;
+	}
+
+	#timeline th {
+		font-weight: normal;
+		padding-right: 10px;
+	}
+
+	#timeline input {
+		width: 16px;
+		height: 16px;
+		line-height: 16px;
+		margin: 0 auto;
+		font-size: 14px;
+		border: 0 none;
+		background: #fff;
+		-webkit-appearance: none;
+	}
+
+	#info {
+		display: inline-block;
+		padding: 5px 15px;
+		font-size: 0.8em;
+	}
+
+	#info a{
+		color: #d33;
+	}
+
+	</style>
+</head>
+<body>
+
+<div id="demo">
+	<h3>Dubstep Sequencer</h3>
+
+	<div id="controls">
+		<button onclick="mySequencer.play()">Play</button>
+		<button onclick="mySequencer.stop()">Stop</button>
+		|
+		<button onclick="addSequence()">Add Sequence</button>
+		|
+		<button onclick="generateRandomHit()">Generate random Hit!</button>
+	</div>
+
+	<table id="timeline"></table>
+
+	<span id="info">
+		Each sequence can have values from 1 - 5.<br>
+		<br>
+		A simple sequencing demo using Zynga's JukeBox.<br>
+		This demo uses sound samples from <a href="http://www.musicradar.com/news/tech/free-music-samples-download-loops-hits-and-multis-217833/79">this site</a>.
+	</span>
+</div>
+
+
+<script>
+
+
+var mySequencer,
+	addSequence, // public helper function
+	generateRandomHit; // public helper function
+
+(function() {
+
+
+	var trackSettings = {};
+
+    var spritemap = {
+		'1': { 'start': 0.00, 'end': 3.50 },
+		'2': { 'start': 4.00, 'end': 7.50 },
+		'3': { 'start': 8.00, 'end': 11.50 },
+		'4': { 'start': 12.00, 'end': 15.50 },
+		'5': { 'start': 16.00, 'end': 19.50 }
+	};
+
+	var tracks = 'Bass Beat Synth Organ'.split(' '),
+		resourceTypes = 'ac3 m4a mp3 ogg'.split(' ');
+
+	for (var t = 0, l = tracks.length; t < l; t++) {
+
+		var setting = {
+			autoplay: false
+		};
+
+		setting.spritemap = spritemap;
+		setting.resources = [];
+
+		for (var r = 0, rl = resourceTypes.length; r < rl; r++) {
+			setting.resources.push('./media/dubstep-' + tracks[t].toLowerCase() + '.' + resourceTypes[r]);
+		}
+
+		trackSettings[t] = setting;
+
+	}
+
+
+	mySequencer = new Sequencer({
+		onended: function() {
+			updateTimelineUI(null, 'deactivate');
+		},
+		onsequencechange: function(sequence) {
+			updateTimelineUI(sequence - 1, 'deactivate')
+			updateTimelineUI(sequence, 'activate');
+		}
+	}, trackSettings);
+
+
+
+	/*
+	 * PUBLIC HELPER FUNCTION
+	 */
+	addSequence = function() {
+
+		var tracks = document.querySelectorAll('tr'),
+			sequenceId = sequencesAmount++;
+
+		for (var t = 0, l = tracks.length; t < l; t++) {
+			var cell = generateTimelineCell(sequenceId, t);
+			tracks[t].appendChild(cell);
+		}
+
+	}
+
+	/*
+	 * PUBLIC HELPER FUNCTION
+	 */
+	generateRandomHit = function() {
+
+		var cells = document.querySelectorAll('td input');
+
+		for (var c = 0, l = cells.length; c < l; c++) {
+			cells[c].value = Math.round(Math.random() * 5);
+			cells[c].onblur();
+		}
+
+	}
+
+
+	function updateTimelineUI(sequence, mode) {
+
+		mode = mode || 'activate';
+
+		var elements;
+		if (sequence === null) {
+			elements = document.querySelectorAll('td');
+		} else {
+			elements = document.querySelectorAll('td.x' + sequence);
+		}
+
+		for (var e = 0, l = elements.length; e < l; e++) {
+		    var newClassName;
+			if (mode === 'deactivate') {
+				newClassName = elements[e].className.replace(/\sactive/,'');
+			} else {
+				newClassName = elements[e].className + ' active';
+			}
+
+			elements[e].className = newClassName;
+		
+		}
+
+	}
+
+
+	function generateTimelineCell(x, y) {
+
+		var td = document.createElement('td');
+		td.className = 'x' + x;
+
+		var input = document.createElement('input');
+		input.setAttribute('data-x', x);
+		input.setAttribute('data-y', y);
+
+		(function(x,y){
+			input.onblur = function() {
+				if(mySequencer.set(y, x, this.value) === false) {
+					this.value = '';
+				}
+			};
+		})(x,y);
+
+		td.appendChild(input);
+
+		return td;
+
+	}
+
+
+
+
+	var timelineTable = document.getElementById('timeline'),
+		sequencesAmount = 10;
+
+
+
+	for (var y = 0; y < tracks.length; y++) {
+
+		var tr = document.createElement('tr');
+		tr.className = 'y' + y;
+
+		var th = document.createElement('th');
+		th.innerHTML = tracks[y];
+
+		tr.appendChild(th);
+
+		for (var x = 0; x < sequencesAmount; x++) {
+
+			var cell = generateTimelineCell(x, y);
+			tr.appendChild(cell);
+
+		}
+
+		timelineTable.appendChild(tr);
+
+	}
+
+
+/*
+	Sequencer.generate = function(input) {
+
+		var elements,
+			mode = 'random';
+
+		if (input !== undefined) {
+			elements = [ input ];
+			mode = 'add';
+		} else {
+			elements = document.getElementsByTagName('input');
+		}
+
+		for (var e = 0, l = elements.length; e < l; e++) {
+
+			var element = elements[e],
+				value = element.value;
+
+			if (mode === 'random') {
+				var value = Math.round(Math.random() * 5);
+			} else if (mode === 'add') {
+				value = (parseInt(value, 10) + 1) % 5;
+			}
+
+			element.value = value;
+
+			Sequencer.update(elements.getAttribute('data-x'), elements.getAttribute('data-y'), value, element);
+
+		}
+
+	};
+*/
+
+
+})();
+
+</script>
+</body>
+</html>
