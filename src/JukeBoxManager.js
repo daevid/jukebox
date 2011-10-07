@@ -15,22 +15,22 @@ JukeBox.Manager = function(enforceFlash) {
 	this.features = {};
 	this.codecs = {};
 
-
+	// Correction, Reset & Pause
 	this.__jukeBoxes = {};
 	this.__jukeBoxesLength = 0;
 
+	// Queuing functionality
 	this.__clones = {};
-	this.__clonesLength = 0;
-
 	this.__queue = [];
 
 	this.__enforceFlash = enforceFlash || false;
 	this.__detectFeatures();
 
 
-	if (!this.__intervalId) {
+	// Only allow one Jukebox Manager Loop, to prevent errors in playback
+	if (!JukeBox.__intervalId) {
 		var that = this;
-		this.__intervalId = window.setInterval(function() {
+		JukeBox.__intervalId = window.setInterval(function() {
 			that.__loop();
 		}, 100);
 	}
@@ -169,7 +169,7 @@ JukeBox.Manager.prototype = {
 		// Queue functionality
 		if (
 			this.__queue.length
-			&& this.__jukeBoxesLength + this.__clonesLength < this.features.channels
+			&& this.__jukeBoxesLength < this.features.channels
 		) {
 
 			var queueEntry = this.__queue[0],
