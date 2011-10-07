@@ -29,6 +29,7 @@ var JukeBox = function(settings, origin) {
 		JukeBox.__manager = new JukeBox.Manager(this.settings.enforceFlash);
 	}
 
+	this.isPlaying = null;
 	this.resource = null;
 
 	// Use JukeBox Manager for Codec and Feature Detection
@@ -54,18 +55,20 @@ var JukeBox = function(settings, origin) {
 
 
 
-// The Stream Counter
+/*
+ * The unique JukeBox ID
+ */
 JukeBox.__jukeBoxId = 0;
 
 JukeBox.prototype = {
 
 	defaults: {
-		resources: [], // The resources array containing the audio file urls
-		autoplay: false, // Autoplay is deactivated by default
-		spritemap: {}, // The spritemap object per-stream
-		loop: false, // Loop the complete stream again when last entry was played?
+		resources: [], // contains the audio file urls
+		autoplay: false, // deactivated by default
+		spritemap: {}, // spritemap entries
+		loop: false, // loops the complete stream again
 		flashMediaElement: './swf/FlashMediaElement.swf',
-		enforceFlash: false,
+		enforceFlash: false, // will disable all HTML5 stuff
 		canplaythroughTimeout: 1000, // timeout if EventListener fails
 	},
 
@@ -120,6 +123,8 @@ JukeBox.prototype = {
 			settings = this.settings,
 			features = JukeBox.__manager.features || {};
 
+
+		// HTML5 Audio
 		if (features.html5audio) {
 
 			this.context = new Audio();
@@ -139,7 +144,7 @@ JukeBox.prototype = {
 					this.context.addEventListener('progress', bufferFunc, true);
 				*/
 
-				// This is the timeout, we will penetrate the stream anyways
+				// This is the timeout, we will penetrate the currentTime anyways.
 				window.setTimeout(function(){
 					that.context.removeEventListener('canplaythrough', addFunc, true);
 					addFunc('timeout');
@@ -171,6 +176,8 @@ JukeBox.prototype = {
 				this.__backgroundMusic = settings.spritemap[settings.autoplay];
 			}
 
+
+		// Flash Audio
 		} else if (features.flashaudio) {
 
 			// FIXME: This is the hacky API, but got no more generic idea for now =/
@@ -219,7 +226,7 @@ JukeBox.prototype = {
 		};
 
 		/*
-		 * I Can Haz Flash? So I've got to be a stupidz IE user =D
+		 * IE will only render a Shockwave Flash file if there's this crappy outerHTML used.
 		 */
 		if (navigator.userAgent.match(/MSIE/)) {
 
@@ -257,6 +264,11 @@ JukeBox.prototype = {
 
 			this.context = document.getElementById('jukebox-flashstream-' + this.id);
 
+
+		/*
+		 * This is the case for a cool, but outdated Browser
+		 * ... like Netscape or so ;)
+		 */
 		} else {
 
 			context = document.createElement('embed');
@@ -321,9 +333,14 @@ JukeBox.prototype = {
 	 */
 	play: function(pointer, enforce) {
 
-		if (this.isPlaying && enforce !== true && !this.__backgroundMusic) {
-			JukeBox.__manager.addQueueEntry(pointer, this.id);
+		if (this.isPlaying !== null && enforce !== true) {
+
+			if (JukeBox.__manager) {
+				JukeBox.__manager.addQueueEntry(pointer, this.id);
+			}
+
 			return;
+
 		}
 
 		var spritemap = this.settings.spritemap,

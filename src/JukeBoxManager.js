@@ -45,7 +45,7 @@ JukeBox.Manager.prototype = {
 
 		if (audio && audio.canPlayType && !this.__enforceFlash) {
 
-			// this is the list we will walk through to check codec support
+			// Codec Detection MIME List
 			var mimeList = [
 				// e = extension, m = mime type
 				{ e: '3gp', m: [ 'audio/3gpp' ] },
@@ -133,7 +133,7 @@ JukeBox.Manager.prototype = {
 
 		if (this.features.flashaudio) {
 
-			// Overwrite cocedcs only if there's no html5audio support
+			// Overwrite codecs only if there's no html5audio support
 			if (!this.features.html5audio) {
 
 				// Known to work with every Flash Implementation
@@ -166,7 +166,7 @@ JukeBox.Manager.prototype = {
 		}
 
 
-		// Queue functionality
+		// Queue Functionality for Clone-supporting environments
 		if (
 			this.__queue.length
 			&& this.__jukeBoxesLength < this.features.channels
@@ -175,7 +175,8 @@ JukeBox.Manager.prototype = {
 			var queueEntry = this.__queue[0],
 				originJukeBox = this.__getJukeBoxById(queueEntry.origin);
 
-			if (originJukeBox) {
+			if (originJukeBox !== null) {
+
 				var freeClone = this.__getClone(queueEntry.origin, originJukeBox.settings);
 
 				// Use free clone for playback
@@ -190,6 +191,7 @@ JukeBox.Manager.prototype = {
 					freeClone.play(queueEntry.pointer, true);
 
 				}
+
 			}
 
 			// Remove Queue Entry. It's corrupt if nothing happened.
@@ -197,7 +199,25 @@ JukeBox.Manager.prototype = {
 
 			return;
 
+
+		// Queue Functionality for Single-JukeBox-Mode (iOS)
+		} else if (
+			this.__queue.length
+			&& this.features.channels === 1
+		) {
+
+			var queueEntry = this.__queue[0],
+				originJukeBox = this.__getJukeBoxById(queueEntry.origin);
+
+			if (originJukeBox !== null) {
+				originJukeBox.play(queueEntry.pointer, true);
+			}
+
+			// Remove Queue Entry. It's corrupt if nothing happened
+			this.__queue.splice(0, 1);
+
 		}
+
 
 
 		for (var id in this.__jukeBoxes) {
@@ -228,6 +248,7 @@ JukeBox.Manager.prototype = {
 
 			// Remove Idling Clones
 			} else if (jukeBox.isClone && jukeBox.isPlaying === null) {
+
 				this.removeJukeBox(jukeBox);
 				continue;
 
@@ -268,6 +289,7 @@ JukeBox.Manager.prototype = {
 			) {
 				return clone;
 			}
+
 		}
 
 
@@ -317,6 +339,7 @@ JukeBox.Manager.prototype = {
 
 
 		for (var r = 0, l = resources.length; r < l; r++) {
+
 			var resource = resources[r],
 				extension = resource.match(/\.([^\.]*)$/)[1];
 
@@ -339,7 +362,6 @@ JukeBox.Manager.prototype = {
 
 		if (
 			jukeBox instanceof JukeBox
-			// Object.prototype.toString.call(jukeBox) === '[object Object]'
 			&& this.__jukeBoxes[jukeBox.id] === undefined
 		) {
 			this.__jukeBoxesLength++;
@@ -374,13 +396,21 @@ JukeBox.Manager.prototype = {
 	 * This function is kindof public, but only used for Queue Delegation
 	 *
 	 * DON'T USE IT.
+	 *
 	 */
-	addQueueEntry: function(pointer, streamId) {
+	addQueueEntry: function(pointer, jukeBoxId) {
 
-		this.__queue.push({
-			pointer: pointer,
-			origin: streamId
-		});
+		if (
+			(typeof pointer === 'string' || typeof pointer === 'number')
+			&& this.__jukeBoxes[jukeBoxId] !== undefined
+		) {
+
+			this.__queue.push({
+				pointer: pointer,
+				origin: jukeBoxId
+			});
+
+		}
 
 	}
 
