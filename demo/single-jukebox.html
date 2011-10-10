@@ -43,70 +43,61 @@ var myJukeBox;
 (function() {
 
 	myJukeBox = new JukeBox({
-
-		// optional, required for MSIE-Environments =/
-		// enforceFlash: true,
-		
+	
 		resources: [
-			'media/spritemap-forest.ac3',
-			'media/spritemap-forest.mp3',
-			'media/spritemap-forest.ogg'
+			'media/spritemap-cajon.ac3',
+			'media/spritemap-cajon.mp3',
+			'media/spritemap-cajon.m4a',
+			'media/spritemap-cajon.ogg'
 		],
 
-		autoplay: 'bg-birds',
-
 		spritemap: {
-
-			"bg-birds": {
-				"start": 1.00,
-				"end": 41.00,
-				"loop": true
+			'cajon-1': {
+				'start': 0.00,
+				'end': 4.20
 			},
 
-			"cricket_chirp": {
-				"start": 42.00,
-				"end": 44.75
-			},
-
-			"dog_bark": {
-				"start": 46.00,
-				"end": 47.50
-			},
-
-			"bg-chacofrogs": {
-				"start": 51.00,
-				"end": 81.00,
-				"loop": true
-			},
-
-			"chacofrog": {
-				"start": 82.00,
-				"end": 85.90 // crappy audio api says that the stream ends at 84.9760 instead of 85.00 as it does =/
+			'cajon-2': {
+				'start': 5.00,
+				'end': 9.30
 			}
 
 		}
-
+	
 	});
+
+	function createButton(entry, forcePlayback) {
+
+		var button = document.createElement('button');
+		button.innerHTML = entry + (forcePlayback === true ? ' (forced)' : '');
+
+		if (forcePlayback !== true) {
+			(function(entry) {
+				button.onclick = function() {
+					myJukeBox.play(entry);
+				};
+			})(entry);
+		} else {
+			(function(entry) {
+				button.onclick = function() {
+					myJukeBox.play(entry, true);
+				};
+			})(entry);
+		}
+
+		return button;
+	
+	}
+
 
 	var spritemapEntries = document.getElementById('play-spritemap-entries');
 
 	for (var entry in myJukeBox.settings.spritemap) {
 	
-		var button = document.createElement('button'),
-			desc = entry + ((myJukeBox.settings.spritemap[entry].loop === true) ? ' (loop)' : '');
-
-		button.innerHTML = desc;
-
-		(function(entry){
-			button.onclick = function() {
-				myJukeBox.play(entry);
-			};
-		})(entry);
-
-		spritemapEntries.appendChild(button);
+		spritemapEntries.appendChild(createButton(entry));
+		spritemapEntries.appendChild(createButton(entry, true));
 
 	}
-
 
 })();
 </script>
