@@ -403,8 +403,12 @@ JukeBox.prototype = {
 	 * This will pause the current playback and cache the pointer position.
 	 */
 	pause: function() {
+
+		this.isPlaying = null;
+
 		this.__lastPosition = this.getCurrentTime();
 		this.context.pause();
+
 	},
 
 	/*
