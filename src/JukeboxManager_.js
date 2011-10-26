@@ -1,23 +1,23 @@
 
-if (typeof JukeBox === 'undefined') {
-	throw "JukeBox Manager requires JukeBox.js to run properly";
+if (typeof Jukebox === 'undefined') {
+	throw "Jukebox Manager requires Jukebox.js to run properly";
 }
 
 /*
- * This is the transparent JukeBox Manager that runs in the background
+ * This is the transparent Jukebox Manager that runs in the background
  *
- * You shouldn't call the constructor, a JukeBox Manager instance is automatically
- * created if you create a JukeBox.
+ * You shouldn't call the constructor, a Jukebox Manager instance is automatically
+ * created if you create a Jukebox.
  *
  */
-JukeBox.Manager = function(enforceFlash) {
+Jukebox.Manager = function(enforceFlash) {
 
 	this.features = {};
 	this.codecs = {};
 
 	// Correction, Reset & Pause
-	this.__jukeBoxes = {};
-	this.__jukeBoxesLength = 0;
+	this.__jukeboxes = {};
+	this.__jukeboxesLength = 0;
 
 	// Queuing functionality
 	this.__clones = {};
@@ -28,16 +28,16 @@ JukeBox.Manager = function(enforceFlash) {
 
 
 	// Only allow one Jukebox Manager Loop, to prevent errors in playback
-	if (!JukeBox.__intervalId) {
+	if (!Jukebox.__intervalId) {
 		var that = this;
-		JukeBox.__intervalId = window.setInterval(function() {
+		Jukebox.__intervalId = window.setInterval(function() {
 			that.__loop();
 		}, 100);
 	}
 
 };
 
-JukeBox.Manager.prototype = {
+Jukebox.Manager.prototype = {
 
 	__detectFeatures: function() {
 
@@ -169,7 +169,7 @@ JukeBox.Manager.prototype = {
 	__loop: function() {
 
 		// Nothing to do
-		if (this.__jukeBoxLength === 0) {
+		if (this.__jukeboxLength === 0) {
 			return;
 		}
 
@@ -177,25 +177,25 @@ JukeBox.Manager.prototype = {
 		// Queue Functionality for Clone-supporting environments
 		if (
 			this.__queue.length
-			&& this.__jukeBoxesLength < this.features.channels
+			&& this.__jukeboxesLength < this.features.channels
 		) {
 
 			var queueEntry = this.__queue[0],
-				originJukeBox = this.__getJukeBoxById(queueEntry.origin);
+				originJukebox = this.__getJukeboxById(queueEntry.origin);
 
-			if (originJukeBox !== null) {
+			if (originJukebox !== null) {
 
-				var freeClone = this.__getClone(queueEntry.origin, originJukeBox.settings);
+				var freeClone = this.__getClone(queueEntry.origin, originJukebox.settings);
 
 				// Use free clone for playback
 				if (freeClone !== null) {
 
 					if (this.features.volume === true) {
-						var originJukeBox = this.__jukeBoxes[queueEntry.origin];
-						originJukeBox && freeClone.setVolume(originJukeBox.getVolume());
+						var originJukebox = this.__jukeboxes[queueEntry.origin];
+						originJukebox && freeClone.setVolume(originJukebox.getVolume());
 					}
 
-					this.addJukeBox(freeClone);
+					this.addJukebox(freeClone);
 					freeClone.play(queueEntry.pointer, true);
 
 				}
@@ -208,17 +208,17 @@ JukeBox.Manager.prototype = {
 			return;
 
 
-		// Queue Functionality for Single-JukeBox-Mode (iOS)
+		// Queue Functionality for Single-Jukebox-Mode (iOS)
 		} else if (
 			this.__queue.length
 			&& this.features.channels === 1
 		) {
 
 			var queueEntry = this.__queue[0],
-				originJukeBox = this.__getJukeBoxById(queueEntry.origin);
+				originJukebox = this.__getJukeboxById(queueEntry.origin);
 
-			if (originJukeBox !== null) {
-				originJukeBox.play(queueEntry.pointer, true);
+			if (originJukebox !== null) {
+				originJukebox.play(queueEntry.pointer, true);
 			}
 
 			// Remove Queue Entry. It's corrupt if nothing happened
@@ -228,44 +228,44 @@ JukeBox.Manager.prototype = {
 
 
 
-		for (var id in this.__jukeBoxes) {
+		for (var id in this.__jukeboxes) {
 
-			var jukeBox = this.__jukeBoxes[id],
-				jukeBoxPosition = jukeBox.getCurrentTime() || 0;
+			var jukebox = this.__jukeboxes[id],
+				jukeboxPosition = jukebox.getCurrentTime() || 0;
 
 
 			// Correction
-			if (jukeBox.isPlaying && jukeBox.wasReady === false) {
+			if (jukebox.isPlaying && jukebox.wasReady === false) {
 
-				jukeBox.wasReady = jukeBox.setCurrentTime(jukeBox.isPlaying.start);
+				jukebox.wasReady = jukebox.setCurrentTime(jukebox.isPlaying.start);
 
 
 			// Reset / Stop
-			} else if (jukeBox.isPlaying && jukeBox.wasReady){
+			} else if (jukebox.isPlaying && jukebox.wasReady){
 
-				if (jukeBoxPosition > jukeBox.isPlaying.end) {
+				if (jukeboxPosition > jukebox.isPlaying.end) {
 
-					if (jukeBox.isPlaying.loop === true) {
-						jukeBox.play(jukeBox.isPlaying.start, true);
+					if (jukebox.isPlaying.loop === true) {
+						jukebox.play(jukebox.isPlaying.start, true);
 					} else {
-						jukeBox.stop();
+						jukebox.stop();
 					}
 
 				}
 
 
 			// Remove Idling Clones
-			} else if (jukeBox.isClone && jukeBox.isPlaying === null) {
+			} else if (jukebox.isClone && jukebox.isPlaying === null) {
 
-				this.removeJukeBox(jukeBox);
+				this.removeJukebox(jukebox);
 				continue;
 
 
 			// Background Music for Single-Channel Environment
-			} else if (jukeBox.__backgroundMusic !== undefined && jukeBox.isPlaying === null) {
+			} else if (jukebox.__backgroundMusic !== undefined && jukebox.isPlaying === null) {
 
-				if (jukeBoxPosition > jukeBox.__backgroundMusic.end) {
-					jukeBox.__backgroundHackForiOS();
+				if (jukeboxPosition > jukebox.__backgroundMusic.end) {
+					jukebox.__backgroundHackForiOS();
 				}
 
 			}
@@ -275,10 +275,10 @@ JukeBox.Manager.prototype = {
 
 	},
 
-	__getJukeBoxById: function(id) {
+	__getJukeboxById: function(id) {
 
-		if (this.__jukeBoxes && this.__jukeBoxes[id] !== undefined) {
-			return this.__jukeBoxes[id];
+		if (this.__jukeboxes && this.__jukeboxes[id] !== undefined) {
+			return this.__jukeboxes[id];
 		}
 
 		return null;
@@ -312,7 +312,7 @@ JukeBox.Manager.prototype = {
 			// Clones just don't autoplay. Just don't :)
 			cloneSettings.autoplay = false;
 
-			var newClone = new JukeBox(cloneSettings, origin);
+			var newClone = new Jukebox(cloneSettings, origin);
 			newClone.isClone = true;
 			newClone.wasReady = false;
 
@@ -363,17 +363,17 @@ JukeBox.Manager.prototype = {
 	},
 
 	/*
-	 * This function adds a JukeBox to the JukeBoxManager's loop
-	 * @params {JukeBox Instance}
+	 * This function adds a Jukebox to the JukeboxManager's loop
+	 * @params {Jukebox Instance}
 	 */
-	addJukeBox: function(jukeBox) {
+	addJukebox: function(jukebox) {
 
 		if (
-			jukeBox instanceof JukeBox
-			&& this.__jukeBoxes[jukeBox.id] === undefined
+			jukebox instanceof Jukebox
+			&& this.__jukeboxes[jukebox.id] === undefined
 		) {
-			this.__jukeBoxesLength++;
-			this.__jukeBoxes[jukeBox.id] = jukeBox;
+			this.__jukeboxesLength++;
+			this.__jukeboxes[jukebox.id] = jukebox;
 			return true;
 		}
 
@@ -382,17 +382,17 @@ JukeBox.Manager.prototype = {
 	},
 
 	/*
-	 * This function removes a JukeBox from the JukeBoxManager's loop
-	 * @params {JukeBox Instance} jukeBox
+	 * This function removes a Jukebox from the JukeboxManager's loop
+	 * @params {Jukebox Instance} jukebox
 	 */
-	removeJukeBox: function(jukeBox) {
+	removeJukebox: function(jukebox) {
 
 		if (
-			jukeBox instanceof JukeBox
-			&& this.__jukeBoxes[jukeBox.id] !== undefined
+			jukebox instanceof Jukebox
+			&& this.__jukeboxes[jukebox.id] !== undefined
 		) {
-			this.__jukeBoxesLength--;
-			delete this.__jukeBoxes[jukeBox.id];
+			this.__jukeboxesLength--;
+			delete this.__jukeboxes[jukebox.id];
 			return true;
 		}
 
@@ -406,16 +406,16 @@ JukeBox.Manager.prototype = {
 	 * DON'T USE IT.
 	 *
 	 */
-	addQueueEntry: function(pointer, jukeBoxId) {
+	addQueueEntry: function(pointer, jukeboxId) {
 
 		if (
 			(typeof pointer === 'string' || typeof pointer === 'number')
-			&& this.__jukeBoxes[jukeBoxId] !== undefined
+			&& this.__jukeboxes[jukeboxId] !== undefined
 		) {
 
 			this.__queue.push({
 				pointer: pointer,
-				origin: jukeBoxId
+				origin: jukeboxId
 			});
 
 		}

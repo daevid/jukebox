@@ -1,13 +1,13 @@
 
 /*
- * This will construct a JukeBox instance.
- * The JukeBox Manager itself is transparent and irrelevant for usage.
+ * This will construct a Jukebox instance.
+ * The Jukebox Manager itself is transparent and irrelevant for usage.
  * @param {Object} settings The settings object (look defaults for more details)
- * @param {Number} [id] The optional id of the JukeBox (automatically managed if not given)
+ * @param {Number} [id] The optional id of the Jukebox (automatically managed if not given)
  */
-var JukeBox = function(settings, origin) {
+var Jukebox = function(settings, origin) {
 
-	this.id = ++JukeBox.__jukeBoxId;
+	this.id = ++Jukebox.__jukeboxId;
 	this.origin = origin || null;
 
 	this.settings = {};
@@ -21,22 +21,22 @@ var JukeBox = function(settings, origin) {
 	}
 
 
- 	// The JukeBox Manager itself is transparent
+	// The Jukebox Manager itself is transparent
 	if (
-		JukeBox.__manager === undefined
-		&& typeof JukeBox.Manager === 'function'
+		Jukebox.__manager === undefined
+		&& typeof Jukebox.Manager === 'function'
 	) {
-		JukeBox.__manager = new JukeBox.Manager(this.settings.enforceFlash);
+		Jukebox.__manager = new Jukebox.Manager(this.settings.enforceFlash);
 	}
 
 	this.isPlaying = null;
 	this.resource = null;
 
-	// Use JukeBox Manager for Codec and Feature Detection
-	if (JukeBox.__manager) {
-		this.resource = JukeBox.__manager.getPlayableResource(this.settings.resources);
+	// Use Jukebox Manager for Codec and Feature Detection
+	if (Jukebox.__manager) {
+		this.resource = Jukebox.__manager.getPlayableResource(this.settings.resources);
 
-	// No JukeBox Manager? So it's a forced Playback
+	// No Jukebox Manager? So it's a forced Playback
 	} else if (this.settings.resources.length === 1) {
 		this.resource = this.settings.resources[0];
 	}
@@ -44,7 +44,7 @@ var JukeBox = function(settings, origin) {
 	// Still no resource? Stupidz!
 	if (this.resource === null) {
 		// GrandMa should update her Browser -.-
-		throw "Either your Browser can't play the given resources - or you have missed to include JukeBox Manager.";
+		throw "Either your Browser can't play the given resources - or you have missed to include Jukebox Manager.";
 	} else {
 		this.__init();
 	}
@@ -56,11 +56,11 @@ var JukeBox = function(settings, origin) {
 
 
 /*
- * The unique JukeBox ID
+ * The unique Jukebox ID
  */
-JukeBox.__jukeBoxId = 0;
+Jukebox.__jukeboxId = 0;
 
-JukeBox.prototype = {
+Jukebox.prototype = {
 
 	defaults: {
 		resources: [], // contains the audio file urls
@@ -78,7 +78,7 @@ JukeBox.prototype = {
 	__addToManager: function(event) {
 
 		if (this.__wasAddedToManager !== true) {
-			JukeBox.__manager.addJukeBox(this);
+			Jukebox.__manager.addJukebox(this);
 			this.__wasAddedToManager = true;
 		}
 
@@ -121,7 +121,8 @@ JukeBox.prototype = {
 
 		var that = this,
 			settings = this.settings,
-			features = JukeBox.__manager.features || {};
+			features = Jukebox.__manager.features || {},
+			api;
 
 
 		// HTML5 Audio
@@ -160,7 +161,7 @@ JukeBox.prototype = {
 
 
 			// FIXME: This is the hacky API, but got no more generic idea for now =/
-			for (var api in this.HTML5API) {
+			for (api in this.HTML5API) {
 				this[api] = this.HTML5API[api];
 			}
 
@@ -181,7 +182,7 @@ JukeBox.prototype = {
 		} else if (features.flashaudio) {
 
 			// FIXME: This is the hacky API, but got no more generic idea for now =/
-			for (var api in this.FLASHAPI) {
+			for (api in this.FLASHAPI) {
 				this[api] = this.FLASHAPI[api];
 			}
 
@@ -214,7 +215,8 @@ JukeBox.prototype = {
 	__initFlashContext: function(flashVars) {
 
 		var context,
-			url = this.settings.flashMediaElement;
+			url = this.settings.flashMediaElement,
+			p;
 
 		var params = {
 			'flashvars': flashVars.join('&'),
@@ -251,7 +253,7 @@ JukeBox.prototype = {
 
 
 
-			for (var p in params) {
+			for (p in params) {
 
 				var element = document.createElement('param');
 				element.setAttribute('name', p);
@@ -281,7 +283,7 @@ JukeBox.prototype = {
 			params.loop = false;
 			params.src = url + '?x=' + (Date.now ? Date.now() : +new Date());
 
-			for (var p in params) {
+			for (p in params) {
 				context.setAttribute(p, params[p]);
 			}
 
@@ -335,8 +337,8 @@ JukeBox.prototype = {
 
 		if (this.isPlaying !== null && enforce !== true) {
 
-			if (JukeBox.__manager) {
-				JukeBox.__manager.addQueueEntry(pointer, this.id);
+			if (Jukebox.__manager) {
+				Jukebox.__manager.addQueueEntry(pointer, this.id);
 			}
 
 			return;
@@ -371,8 +373,10 @@ JukeBox.prototype = {
 
 			this.isPlaying = this.settings.spritemap[pointer];
 
-			// Start Playback, Stream will be corrected within the soundloop of the JukeBox.Manager
-			this.context.play && this.context.play();
+			// Start Playback, Stream will be corrected within the soundloop of the Jukebox.Manager
+			if (this.context.play) {
+				this.context.play();
+			}
 
 			// Locking due to slow Implementation on Mobile Devices
 			this.wasReady = this.setCurrentTime(newPosition);
