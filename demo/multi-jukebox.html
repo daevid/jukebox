@@ -77,7 +77,7 @@ var playDemo;
 			"cajon-2": {
 				"start": 5.00,
 				"end": 9.30 // wanna repeat? 4.1 sounds better than 4.3 seconds
-			},
+			}
 
 		}
 
@@ -112,6 +112,7 @@ var playDemo;
 		}
 
 	});
+
 
 
 	/*
@@ -200,7 +201,7 @@ var playDemo;
 				intervalId = window.setInterval(function() {
 
 					var now = (Date.now ? Date.now() : +new Date()),
-						current = (now - started) % (demoLengthInSeconds * 1000);
+						current = (now - started);
 
 					/* UI STUFF START */
 					currentTime.timeline = current / 1000;
@@ -227,10 +228,17 @@ var playDemo;
 					 *
 					 * Note that current is modulo, so it's between 0 and 40*1000 (ms)
 					 */
+					var foundAction = false;
 					for (var t = 0, l = timelineActions.length; t < l; t++) {
-						if (current >= timelineActions[t].at && current <= (timelineActions[t].at + 200)) {
+						if (current >= timelineActions[t].at && timelineActions[t].fired !== true) {
 							timelineActions[t].exec();
+							timelineActions[t].fired = true;
+							foundAction = true;
 						}
+					}
+
+					if (foundAction === false && current > demoLengthInSeconds * 1000) {
+						window.clearInterval(intervalId);
 					}
 
 				}, 50);
