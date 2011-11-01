@@ -1,11 +1,11 @@
 <!doctype html>
 <html>
 <head>
-	<title>Multi JukeBox Demo</title>
+	<title>Multi Jukebox Demo</title>
     <meta charset="utf-8" />
 
-	<script src="../src/JukeBox.js"></script>
-	<script src="../src/JukeBoxManager.js"></script>
+	<script src="../src/Jukebox.js"></script>
+	<script src="../src/JukeboxManager.js"></script>
 
 	<style>
 	.timeline {
@@ -55,7 +55,7 @@
 var playDemo;
 (function() {
 
-	var cajons = new JukeBox({
+	var cajons = new Jukebox({
 
 		// optional, required for MSIE-Environments =/
 		// enforceFlash: true,
@@ -83,7 +83,7 @@ var playDemo;
 
 	});
 
-	var arpeggios = new JukeBox({
+	var arpeggios = new Jukebox({
 	
 		resources: [
 			'media/spritemap-arpeggios.ac3',
@@ -111,7 +111,7 @@ var playDemo;
 
 		}
 
-	})
+	});
 
 
 	/*

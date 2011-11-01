@@ -3,8 +3,8 @@
 <head>
 	<title>Zynga's JukeBox - Sequencer Demo</title>
     <meta charset="utf-8" />
-	<script src="../../src/JukeBox.js"></script>
-	<script src="../../src/JukeBoxManager.js"></script>
+	<script src="../../src/Jukebox.js"></script>
+	<script src="../../src/JukeboxManager.js"></script>
 	<script src="src/Sequencer.js"></script>
 
 	<style>
@@ -131,7 +131,7 @@
 	<span id="info">
 		Each sequence can have values from 1 - 5.<br>
 		<br>
-		A simple sequencing demo using Zynga's JukeBox.<br>
+		A simple sequencing demo using Zynga's Jukebox.<br>
 		This demo uses sound samples from <a href="http://www.musicradar.com/news/tech/free-music-samples-download-loops-hits-and-multis-217833/79">this site</a>.
 	</span>
 </div>
@@ -147,7 +147,7 @@ var mySequencer, addSequence, generateRandomHit;
 
 
 	/*
-	 * Inital preparation of JukeBox settings
+	 * Inital preparation of Jukebox settings
 	 */
 	var tracks = 'Bass Beat Synth Organ'.split(' '),
 		trackSettings = {},
@@ -181,7 +181,7 @@ var mySequencer, addSequence, generateRandomHit;
 
 	/*
 	 * Initial setup of sequencer with trackSettings
-	 * (which are multiple JukeBox settings)
+	 * (which are multiple Jukebox settings)
 	 */
 	mySequencer = new Sequencer({
 		onended: function() {

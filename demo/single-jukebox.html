@@ -1,11 +1,11 @@
 <!doctype html>
 <html>
 <head>
-	<title>Single JukeBox Demo</title>
+	<title>Single Jukebox Demo</title>
     <meta charset="utf-8" />
 
-	<script src="../src/JukeBox.js"></script>
-	<script src="../src/JukeBoxManager.js"></script>
+	<script src="../src/Jukebox.js"></script>
+	<script src="../src/JukeboxManager.js"></script>
 
 	<style>
 	#debug, #features, #codecs{
@@ -25,13 +25,13 @@
 <h3>Single Jukebox Demo</h3>
 
 
-<h4>JukeBox Controls</h4>
+<h4>Jukebox Controls</h4>
 <div>
-	<button onclick="myJukeBox.stop()">stop()</button>
-	<button onclick="myJukeBox.pause()">pause()</button>
-	<button onclick="myJukeBox.resume()">resume()</button>
-	<button onclick="myJukeBox.setVolume(0.1)">setVolume(0.1)</button>
-	<button onclick="myJukeBox.setVolume(1.0)">setVolume(1.0)</button>
+	<button onclick="myJukebox.stop()">stop()</button>
+	<button onclick="myJukebox.pause()">pause()</button>
+	<button onclick="myJukebox.resume()">resume()</button>
+	<button onclick="myJukebox.setVolume(0.1)">setVolume(0.1)</button>
+	<button onclick="myJukebox.setVolume(1.0)">setVolume(1.0)</button>
 </div>
 
 <h4>Play Spritemap Entries</h4>
@@ -39,10 +39,10 @@
 
 
 <script>
-var myJukeBox;
+var myJukebox;
 (function() {
 
-	myJukeBox = new JukeBox({
+	myJukebox = new Jukebox({
 	
 		resources: [
 			'media/spritemap-cajon.ac3',
@@ -74,13 +74,13 @@ var myJukeBox;
 		if (forcePlayback !== true) {
 			(function(entry) {
 				button.onclick = function() {
-					myJukeBox.play(entry);
+					myJukebox.play(entry);
 				};
 			})(entry);
 		} else {
 			(function(entry) {
 				button.onclick = function() {
-					myJukeBox.play(entry, true);
+					myJukebox.play(entry, true);
 				};
 			})(entry);
 		}
@@ -92,7 +92,7 @@ var myJukeBox;
 
 	var spritemapEntries = document.getElementById('play-spritemap-entries');
 
-	for (var entry in myJukeBox.settings.spritemap) {
+	for (var entry in myJukebox.settings.spritemap) {
 	
 		spritemapEntries.appendChild(createButton(entry));
 		spritemapEntries.appendChild(createButton(entry, true));

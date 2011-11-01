@@ -1,6 +1,6 @@
 
 
-var Sequencer = function(settings, jukeBoxSettings) {
+var Sequencer = function(settings, jukeboxSettings) {
 
 	this.settings = {};
 
@@ -12,9 +12,9 @@ var Sequencer = function(settings, jukeBoxSettings) {
 		this.settings[s] = settings[s];
 	}
 
-	this.jukeBoxSettings = jukeBoxSettings || null;
+	this.jukeboxSettings = jukeboxSettings || null;
 
-	this.__jukeBoxes = {};
+	this.__jukeboxes = {};
 	this.__timeline = {};
 
 	this.__intervalId = null;
@@ -40,8 +40,8 @@ Sequencer.prototype = {
 
 	__init: function() {
 
-		for (var j in this.jukeBoxSettings) {
-			this.__jukeBoxes[j] = new JukeBox(this.jukeBoxSettings[j]);
+		for (var j in this.jukeboxSettings) {
+			this.__jukeboxes[j] = new Jukebox(this.jukeboxSettings[j]);
 			this.__timeline[j] = {};
 		}
 
@@ -100,7 +100,7 @@ Sequencer.prototype = {
 		this.__generateTimelineActions();
 
 		var started = Date.now ? Date.now() : +new Date(),
-			jukeBoxes = this.__jukeBoxes;
+			jukeboxes = this.__jukeboxes;
 			timelineActions = this.__timelineActions,
 			timelineLength = this.__timelineLength,
 			sequenceLength = this.settings.sequenceLength,
@@ -123,7 +123,7 @@ Sequencer.prototype = {
 			for (var t = 0, l = timelineActions.length; t < l; t++) {
 				var action = timelineActions[t];
 				if (current >= action.when && current <= action.when + 200) {
-					jukeBoxes[action.who].play(action.what, true);
+					jukeboxes[action.who].play(action.what, true);
 				}
 			}
 
@@ -158,12 +158,12 @@ Sequencer.prototype = {
 
 	},
 
-	set: function(jukeBoxId, sequence, value) {
+	set: function(jukeboxId, sequence, value) {
 
-		var jukeBox = this.__jukeBoxes[jukeBoxId];
-		if (jukeBox !== undefined) {
-			if (jukeBox.settings.spritemap[value] !== undefined) {
-				this.__timeline[jukeBoxId][sequence] = value;
+		var jukebox = this.__jukeboxes[jukeboxId];
+		if (jukebox !== undefined) {
+			if (jukebox.settings.spritemap[value] !== undefined) {
+				this.__timeline[jukeboxId][sequence] = value;
 				return true;
 			}
 		}
