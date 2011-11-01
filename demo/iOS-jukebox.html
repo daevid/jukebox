@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+	<title>iOS Jukebox Demo</title>
+    <meta charset="utf-8" />
+
+	<script src="../src/Jukebox.js"></script>
+	<script src="../src/JukeboxManager.js"></script>
+
+	<link rel="stylesheet" href="./media/layout.css">
+
+</head>
+<body>
+
+<header>Single Jukebox Demo</header>
+
+<h4>Dealing with iOS security model</h4>
+<p class="z-description">
+	Under iOS, there's a security model that only allows playback of audio
+	if it was caused by a user event. For example, you can use a &lt;button&gt;
+	with an onclick callback function to playback audio.
+</p>
+<p class="z-description">
+	Jukebox also features a repeating background music hack for single-channel
+	environments like iOS. You can make use of it with setting the <mark>autoplay</mark>
+	settings property.
+</p>
+
+
+<h4>iOS example with repeating background music</h4>
+<div class="z-menu">
+	<button onclick="initAutoplayingJukebox()">initialize Jukebox</button>
+</div>
+
+<script>
+
+/*
+ * PUBLIC helpers
+ */
+var initAutoplayingJukebox;
+
+(function() {
+
+	var myJukebox;
+
+	initAutoplayingJukebox = function() {
+
+		// Avoid multiple Jukeboxes on multi-channel environments
+		if (myJukebox !== undefined) {
+			return;
+		}
+
+
+		var settings = {
+	
+			resources: [
+				'media/spritemap-cajon.ac3',
+				'media/spritemap-cajon.mp3',
+				'media/spritemap-cajon.m4a',
+				'media/spritemap-cajon.ogg'
+			],
+
+			autoplay: 'bg-music',
+
+			spritemap: {
+
+				'bg-music': {
+					'start': 0.00,
+					'end': 4.20,
+					'loop': true // Important! Background Music MUST have it
+				},
+
+				'cajon-2': {
+					'start': 5.00,
+					'end': 9.30
+				}
+
+			}
+	
+		};
+
+		myJukebox = new Jukebox(settings);
+
+	};
+ 
+
+})();
+</script>
+</body>
+</html> 

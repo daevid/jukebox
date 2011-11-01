@@ -30,6 +30,12 @@ h4 {
 	padding: 0 0 0.25em 1em;
 }
 
+mark {
+	padding: 0px 10px;
+	color: #fff;
+	background: #999;
+}
+
 .z-menu {
 	display: block;
 	/* max-width: 500px; */ /* w00t? max-width can only be overwritten by another px-property and not by auto!? wtf? */
@@ -45,6 +51,9 @@ h4 {
 	border: 1px solid #460a0c;
 }
 
+.z-description {
+	margin: 0 0 0 1em;
+}
 
 
 .z-timeline {

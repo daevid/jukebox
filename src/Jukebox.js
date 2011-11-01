@@ -174,7 +174,12 @@ Jukebox.prototype = {
 				}
 
 			} else if (features.channels === 1 && settings.spritemap[settings.autoplay]) {
+
 				this.__backgroundMusic = settings.spritemap[settings.autoplay];
+
+				// Initial playback will do the trick for iOS' security model
+				this.play(settings.autoplay);
+
 			}
 
 
