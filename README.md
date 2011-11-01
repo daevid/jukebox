@@ -1,8 +1,8 @@
 
-Zynga's JukeBox
+Zynga's Jukebox
 ==============
 
-The JukeBox is a component for playing sounds and music with the usage of sprites with a special
+The Jukebox is a component for playing sounds and music with the usage of sprites with a special
 focus on performance and cross-device deployment. It is known to run even on Android 1.6+ devices
 and needs very few resources compared to other solutions on the web.
 
@@ -14,31 +14,31 @@ Features
 * HTML5 Audio
 * Flash Audio as fallback (support for Android 1.6)
 * Sound-Spritemap Entries for easier playback
-* Multiple JukeBoxes for parallel playback
+* Multiple Jukeboxes for parallel playback
 
-Important: The old IE9 beta and iOS are known to allow only one JukeBox to run, no parallel playback possible.
+Important: The old IE9 beta and iOS are known to allow only one Jukebox to run, no parallel playback possible.
 
 
-**JukeBox Manager adds the following features:**
+**Jukebox Manager adds the following features:**
 
 * Codec Detection
 * Feature Detection
-* Automatic Work Delegation for busy JukeBoxes
+* Automatic Work Delegation for busy Jukeboxes
 * Automatic Stream Correction (useful for slow implementations)
 * Automatic Looping for Sound-Spritemap entries
 * Playback of Background Music
 
-**Using JukeBox without JukeBox Manager:**
+**Using Jukebox without Jukebox Manager:**
 
-It is not recommended to use JukeBox without the JukeBox Manager, but it's still possible.
-The JukeBox Manager offers Codec and Feature detection - to determine which kind of audio codecs will playback properly in your Environment.
-If you want to still use JukeBox without JukeBox Manager, you will have to set *resources* to an Array containing only one resource.
+It is not recommended to use Jukebox without the Jukebox Manager, but it's still possible.
+The Jukebox Manager offers Codec and Feature detection - to determine which kind of audio codecs will playback properly in your Environment.
+If you want to still use Jukebox without Jukebox Manager, you will have to set *resources* to an Array containing only one resource.
 
 
 Options
 -------
 
-These are the supported JukeBox settings you can pass through its constructor:
+These are the supported Jukebox settings you can pass through its constructor:
 
 * resources = *array of urls to sound files*
 * autoplay = 'spritemap-entry'
@@ -99,23 +99,23 @@ Known Issues
 
 There's the problem with asynchronous playback, which can't be avoided on the JavaScript-side of the implementation. Delays were measured up to 820ms on initial playback. iOS has also a problem when falling into sleep mode, as iTunes will play back the sound file afterwards without stopping it.
 
-Additionally, iOS' security model prevents a website from playing sounds without prior user interaction. Thus, you will have to use a button or similar that will call myJukeBox.play('background-birds') or similar (see > Usage for more details).
+Additionally, iOS' security model prevents a website from playing sounds without prior user interaction. Thus, you will have to use a button or similar that will call myJukebox.play('background-birds') or similar (see > Usage for more details).
 
 
 Usage
 -----
 
-First, you will have to know that there can be several JukeBox instances in parallel.
+First, you will have to know that there can be several Jukebox instances in parallel.
 
-The transparent JukeBox Manager allows so-called work delegation. This work delegation concept lets you use a single JukeBox. You create only one instance, but you are able to play multiple sounds in parallel with it.
+The transparent Jukebox Manager allows so-called work delegation. This work delegation concept lets you use a single Jukebox. You create only one instance, but you are able to play multiple sounds in parallel with it.
 
 For example, you can have an *autoplay* setup for a background music, but you can still play other sound spritemap entries afterwards, while the background music is still played.
 
 
-**Creating a JukeBox**
+**Creating a Jukebox**
 
 ```js
-var myJukeBox = new JukeBox({
+var myJukebox = new Jukebox({
 
 	"resources": [
 		"./url/to/spritemap.mp3",
@@ -143,34 +143,34 @@ var myJukeBox = new JukeBox({
 
 });
 
-// Example call of the JukeBox API
+// Example call of the Jukebox API
 // Note that this is a looping background
-myJukeBox.play('background-birds');
+myJukebox.play('background-birds');
 
 window.setTimeout(function() {
-	myJukeBox.play('cricket-chirp');
+	myJukebox.play('cricket-chirp');
 	// will delegate the work to the internal next free clone,
-	// because the origin JukeBox is busy
+	// because the origin Jukebox is busy
 }, 1000);
 
 window.setTimeout(function() {
-	myJukeBox.play('cricket-chirp', true);
+	myJukebox.play('cricket-chirp', true);
 	// will enforce playback and result will be instant playback
 	// and no background music is played afterwards
 }, 5000);
 ```
 
 
-Public (per-JukeBox) API
+Public (per-Jukebox) API
 -----------------------
 
-Example of a JukeBox API Call:
+Example of a Jukebox API Call:
 
 ```js
-// Note that myJukeBox was initialized already like in the previous example (see > Usage)
+// Note that myJukebox was initialized already like in the previous example (see > Usage)
 
-myJukeBox.play("background-music"); // fastest
-myJukeBox.play(20.10); // slower, will search for matching spritemap entry
+myJukebox.play("background-music"); // fastest
+myJukebox.play(20.10); // slower, will search for matching spritemap entry
 ```
 
 
