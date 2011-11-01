@@ -64,7 +64,8 @@ Sequencer.prototype = {
 				timelineActions.push({
 					who: trackId,
 					when: when,
-					what: what
+					what: what,
+					fired: false
 				});
 
 				if (parseInt(sequenceId, 10) > lastSequenceId) {
@@ -122,8 +123,9 @@ Sequencer.prototype = {
 
 			for (var t = 0, l = timelineActions.length; t < l; t++) {
 				var action = timelineActions[t];
-				if (current >= action.when && current <= action.when + 200) {
+				if (current >= action.when && action.fired === false) {
 					jukeboxes[action.who].play(action.what, true);
+					action.fired = true;
 				}
 			}
 

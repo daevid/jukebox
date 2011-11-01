@@ -1,123 +1,23 @@
 <!doctype html>
 <html>
 <head>
-	<title>Zynga's JukeBox - Sequencer Demo</title>
+	<title>Sequencer Demo</title>
     <meta charset="utf-8" />
 	<script src="../../src/Jukebox.js"></script>
 	<script src="../../src/JukeboxManager.js"></script>
 	<script src="src/Sequencer.js"></script>
 
-	<style>
+	<link rel="stylesheet" href="../media/layout.css">
+	<link rel="stylesheet" href="./media/layout.css">
 
-	body {
-		background: #222;
-	}
-
-	button {
-		background: #eee;
-		border: 1px solid #666;
-		border-radius: 5px 5px 5px 5px;
-	}
-
-	button:hover {
-		background: #fff;
-	}
-
-	button:active {
-		background: #999;
-	}
-
-	#demo {
-		display: block;
-		width: 60%;
-		min-width: 500px;
-		height: auto;
-		margin: 0 auto;
-		padding: 0;
-		color: #fff;
-		background: #444;
-		border: 1px solid #222;
-		border-radius: 15px 15px 15px 15px;
-	}
-
-	h3 {
-		margin: 0;
-		padding: 10px;
-		color: #fff;
-		border-radius: 15px 15px 0px 0px;
-	}
-
-	#controls {
-		background: #888;
-		padding: 3px 10px;
-	}
-
-	#timeline {
-		display: block;
-		width: 100%;
-		margin: 0;
-		padding: 5px 0px;
-		overflow-x: scroll;
-		overflow-y: hidden;
-	}
-
-
-
-
-	#timeline td {
-		width: 30px;
-		height: 30px;
-		margin: 2px 2px;
-		padding: 2px;
-		border: 1px dotted #ccc;
-		background: #888;
-		text-align: center;
-	}
-
-	#timeline td, #timeline td.active {
-		-webkit-transition-property: 'background-color';
-		-webkit-transition-timing-function: ease-out;
-		-webkit-transition-duration: 1s;
-	}
-
-	#timeline td.active {
-		background: #8c8;
-	}
-
-	#timeline th {
-		font-weight: normal;
-		padding-right: 10px;
-	}
-
-	#timeline input {
-		width: 16px;
-		height: 16px;
-		line-height: 16px;
-		margin: 0 auto;
-		font-size: 14px;
-		border: 0 none;
-		background: #fff;
-		-webkit-appearance: none;
-	}
-
-	#info {
-		display: inline-block;
-		padding: 5px 15px;
-		font-size: 0.8em;
-	}
-
-	#info a{
-		color: #d33;
-	}
-
-	</style>
 </head>
 <body>
 
-<div id="demo">
-	<h3>Dubstep Sequencer</h3>
+<header>Dubstep Sequencer</header>
 
-	<div id="controls">
+<div id="wrapper">
+
+	<div id="controls" class="z-menu">
 		<button onclick="mySequencer.play()">Play</button>
 		<button onclick="mySequencer.stop()">Stop</button>
 		|
@@ -128,20 +28,23 @@
 
 	<table id="timeline"></table>
 
-	<span id="info">
-		Each sequence can have values from 1 - 5.<br>
-		<br>
-		A simple sequencing demo using Zynga's Jukebox.<br>
+	<div id="about">
+		Each sequence field can has a value of 1-5.<br>
 		This demo uses sound samples from <a href="http://www.musicradar.com/news/tech/free-music-samples-download-loops-hits-and-multis-217833/79">this site</a>.
-	</span>
+	</div>
 </div>
 
 
 <script>
 
 
-/* PUBLIC helper functions / objects */
-var mySequencer, addSequence, generateRandomHit;
+/*
+ * PUBLIC helpers
+ */
+
+var mySequencer,
+	addSequence,
+	generateRandomHit;
 
 (function() {
 

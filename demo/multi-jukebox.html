@@ -7,48 +7,26 @@
 	<script src="../src/Jukebox.js"></script>
 	<script src="../src/JukeboxManager.js"></script>
 
-	<style>
-	.timeline {
-		display: block;
-		position: relative;
-		width: 500px;
-		height: 30px;
-		background: orange;
-		border: 1px solid #888;
-	}
-	.marker {
-		display: block;
-		position: absolute;
-		top: 0px;
-		right: 0px;
-		bottom: 0px;
-		left: 0px;
-		color: #fff;
-		text-align: center;
-		line-height: 30px;
-		background: green;
-	}
+	<link rel="stylesheet" href="./media/layout.css">
 
-	#timeline { background: black; height: 20px; }
-	#timeline .marker { background: grey; line-height: 20px; }
-
-	</style>
 </head>
 <body>
 
-<h3>Multi Jukebox Demo</h3>
+<header>Multi Jukebox Demo</header>
 
-<button id="start" onclick="playDemo()">Start Playback</button>
-<hr>
+<div class="z-menu">
+	<button id="start" onclick="playDemo()">Start Playback</button>
+</div>
 
-<b>Timeline</b>
-<div id="timeline" class="timeline"><div id="timeline-marker" class="marker"></div></div>
+<h4>Timeline</h4>
+<div id="timeline" class="z-timeline"><div id="timeline-marker" class="z-timeline-marker"></div></div>
 
-<b>Cajons</b>
-<div id="cajons" class="timeline"><div id="cajons-marker" class="marker"></div></div>
+<h4>Cajons</h4>
+<div id="cajons" class="z-timeline"><div id="cajons-marker" class="z-timeline-marker"></div></div>
 
-<b>Arpeggios</b>
-<div id="arpeggios" class="timeline"><div id="arpeggios-marker" class="marker"></div></div>
+<h4>Arpeggios</h4>
+<div id="arpeggios" class="z-timeline"><div id="arpeggios-marker" class="z-timeline-marker"></div></div>
+
 
 
 <script>

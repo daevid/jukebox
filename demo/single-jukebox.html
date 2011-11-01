@@ -7,26 +7,15 @@
 	<script src="../src/Jukebox.js"></script>
 	<script src="../src/JukeboxManager.js"></script>
 
-	<style>
-	#debug, #features, #codecs{
-		width:98%;
-		padding:1%;
-		overflow-y:scroll;
-		color:white;
-		background:grey;
-	}
-	.footnote:target{
-		background:yellow;
-	}
-	</style>
+	<link rel="stylesheet" href="./media/layout.css">
+
 </head>
 <body>
 
-<h3>Single Jukebox Demo</h3>
+<header>Single Jukebox Demo</header>
 
-
-<h4>Jukebox Controls</h4>
-<div>
+<h4>Controls</h4>
+<div class="z-menu">
 	<button onclick="myJukebox.stop()">stop()</button>
 	<button onclick="myJukebox.pause()">pause()</button>
 	<button onclick="myJukebox.resume()">resume()</button>
@@ -35,7 +24,7 @@
 </div>
 
 <h4>Play Spritemap Entries</h4>
-<div id="play-spritemap-entries"></div>
+<div class="z-menu" id="play-spritemap-entries"></div>
 
 
 <script>
