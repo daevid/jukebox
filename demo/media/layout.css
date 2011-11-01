@@ -38,8 +38,7 @@ mark {
 
 .z-menu {
 	display: block;
-	/* max-width: 500px; */ /* w00t? max-width can only be overwritten by another px-property and not by auto!? wtf? */
-	margin: 0 0 0 1em;
+	margin: 0 1em 0 1em;
 	padding: 5px 15px;
 	background: #9C1115;
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#c71d23', endColorstr='#aa191e');
@@ -52,7 +51,7 @@ mark {
 }
 
 .z-description {
-	margin: 0 0 0 1em;
+	margin: 0 1em 0 1em;
 }
 
 
