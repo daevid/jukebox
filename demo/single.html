@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+	<title>Sprite Inspector</title>
+    <meta charset="utf-8" />
+
+	<script src="../src/Jukebox.js"></script>
+	<script src="../src/JukeboxManager.js"></script>
+
+	<link rel="stylesheet" href="./media/layout.css">
+
+</head>
+<body>
+
+<header>Jukebox
+<ul id="menu">
+	<li>Shooter</li>
+	<li class="active">Inspector</li>
+</ul>	
+</header>
+
+<h2>Warning: This is work in progress. These demos are not finished yet, although they might give you an idea of how to use the Jukebox. Stay tuned for updates.</h2>
+
+<div id="spritemap" class="panel"></div>
+
+<div id="volume">
+	<label>Global volume</label>
+	<input type="range" name="volume-slider" min="0" max="100" value="50" id="volume-slider">
+</div>
+
+<h4>Additional controls</h4>
+<div class="panel">
+	<button onclick="myJukebox.stop()">stop()</button>
+	<button onclick="myJukebox.pause()">pause()</button>
+	<button onclick="myJukebox.resume()">resume()</button>
+</div>
+
+<script>
+var myJukebox;
+(function() {
+
+	myJukebox = new Jukebox({
+	
+		resources: [
+			'media/spritemap-cajon.ac3',
+			'media/spritemap-cajon.mp3',
+			'media/spritemap-cajon.m4a',
+			'media/spritemap-cajon.ogg'
+		],
+
+		spritemap: {
+			'cajon-1': {
+				'start': 0.00,
+				'end': 4.20
+			},
+
+			'cajon-2': {
+				'start': 5.00,
+				'end': 9.30
+			}
+
+		}
+	
+	});
+
+	var randColors = ['green', 'red'],
+		randIndex = 0;
+
+	function createButton(entry, content) {
+		
+		var button = document.createElement('div');
+		button.innerHTML = '<label>'+entry+'</label>';
+		button.style.width = Math.round(((content.end - content.start) / 9.30)*100) + "%";
+		button.style.left = Math.round((content.start / 9.30)*100) + "%";
+		button.className = randColors[randIndex];
+
+		button.onclick = function() {
+			myJukebox.play(entry);
+		};
+		
+		// pick a new color
+		randIndex = randIndex == randColors.length-1 ? 0 : ++randIndex;
+		
+		return button;
+	
+	}
+
+
+	var spritemapEntries = document.getElementById('spritemap');
+
+	for (var entry in myJukebox.settings.spritemap) {
+	
+		spritemapEntries.appendChild(createButton(entry, myJukebox.settings.spritemap[entry]));
+
+	}
+	
+	// connect volume slider
+	document.getElementById('volume-slider').addEventListener('change', function() {
+		myJukebox.setVolume(this.value/100);
+	}, false);
+
+})();
+</script>
+</body>
+</html>

@@ -11,23 +11,21 @@
 
 </head>
 <body>
+	
+	<header>Jukebox
+	<ul id="menu">
+		<li>Shooter</li>
+		<li class="active">Inspector</li>
+	</ul>	
+	</header>
 
-<header>Dealing with iOS Security Model</header>
-
-<p class="z-description">
-	Under iOS, there's a security model that only allows playback of audio
+	<h2>Under iOS, there's a security model that only allows playback of audio
 	if it was caused by a user event. For example, you can use a &lt;button&gt;
-	with an onclick callback function to playback audio.
-</p>
-<p class="z-description">
-	Jukebox also features a repeating background music hack for single-channel
-	environments like iOS. You can make use of it with setting the <mark>autoplay</mark>
-	settings property.
-</p>
+	with an onclick callback function to playback audio.</h2>
 
 
 <h4>iOS relevant example with repeating background music</h4>
-<div class="z-menu">
+<div class="panel">
 	<button onclick="initAutoplayingJukebox()">initialize Jukebox</button>
 </div>
 
