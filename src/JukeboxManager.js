@@ -1,3 +1,13 @@
+/*
+ * Jukebox
+ * http://github.com/zynga/jukebox
+ *
+ * Copyright 2011, Zynga Inc.
+ * Licensed under the MIT License.
+ * https://raw.github.com/zynga/jukebox/master/MIT-LICENSE.txt
+ *
+ */
+
 
 if (typeof Jukebox === 'undefined') {
 	throw "Jukebox Manager requires Jukebox.js to run properly";
